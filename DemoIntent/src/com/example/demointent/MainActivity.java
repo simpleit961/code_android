@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
         if (value1 != null) {
           // do something with the data
         	Log.i(LOG_TAG,"value=="+value1);
+        	Log.i(LOG_TAG,"value=="+value1);
         } 
     }
 
