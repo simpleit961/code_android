@@ -32,6 +32,7 @@ public class MainActivity extends Activity {
           // do something with the data
         	Log.i(LOG_TAG,"value=="+value1);
         	Log.i(LOG_TAG,"value=="+value1);
+        	Log.i(LOG_TAG,"value=="+value1);
         } 
     }
 
