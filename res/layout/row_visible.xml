@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp"
+    android:paddingTop="10dp" >
+
+    <TextView
+        android:id="@+id/ssidTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/signalStrengthImageView"
+        android:layout_toRightOf="@+id/signalStrengthImageView"
+        android:lines="1"
+		android:ellipsize="marquee"
+        android:maxEms="12"
+        android:text="ssid"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/ssidTextView"
+        android:gravity="right" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/ratedSpeedImageView"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="#BEEECA" />
+
+            <TextView
+                android:id="@+id/ratedSpeedTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ratedSpeedImageView"
+                android:layout_centerInParent="true"
+                android:clickable="false"
+                android:text="Fast"
+                android:textSize="10dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/popularityImageView"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:background="@null"
+                android:src="@drawable/ic_popular" />
+
+            <TextView
+                android:id="@+id/popularityTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/popularityImageView"
+                android:layout_centerHorizontal="true"
+                android:text="Popular"
+                android:textSize="10dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/loginImageView"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@null"
+                android:src="@drawable/ic_lock" />
+
+            <TextView
+                android:id="@+id/loginTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/loginImageView"
+                android:layout_centerInParent="true"
+                android:text="Login"
+                android:textSize="10dp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/addressTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/linearLayout1"
+        android:layout_alignLeft="@+id/ssidTextView"
+        android:ellipsize="marquee"
+        android:maxEms="12"
+        android:singleLine="true"
+        android:text="1 Fusionopolis Way, Singapore 123"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/battleship_grey"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/wifiBackImageView"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_wifi_full_bar" />
+
+    <ImageView
+        android:id="@+id/signalStrengthImageView"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/wifiBackImageView"
+        android:src="@drawable/ic_wifi_full_bar" />
+
+</RelativeLayout>

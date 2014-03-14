@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name = "list_background">#FFFFFF</color>
+    <color name = "list_background_pressed">#B5A642</color>
+    <color name = "list_item_title">#3D2B1F</color>
+    <color name = "navigation_text">#3D2B1F</color>
+   	<color name = "battleship_grey">#848482</color>
+    <color name = "navigation_background">#FFFFFF</color>
+    <color name = "rank_number">#FFFFFF</color>
+    <color name = "action_bar_background">#568203</color>
+   
+    <color name = "login_button_background">#1DACD6</color>
+    <color name = "login_button_text">#FFF</color>
+    <color name = "sign_up_button_text">#FFF</color>
+    <color name = "sign_up_button_background">#E32636</color>
+    
+	<color name="filter_color_strong">#FFAAAAAA</color>
+	<color name="filter_color_red">#AF002A</color>
+	<color name="filter_color_green">#B0BF1A</color>
+	<color name="filter_color_orange">#FF7E00</color>
+	<color name="filter_color_grey">#B2BEB5</color>
+</resources>

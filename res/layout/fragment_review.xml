@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/ratedSpeedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/networkDetailsTextView"
+        android:layout_below="@+id/networkDetailsTextView"
+        android:layout_marginTop="20dp"
+        android:text="Speed" />
+
+    <ToggleButton
+        android:id="@+id/slowToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ratedSpeedTextView"
+        android:layout_alignBottom="@+id/ratedSpeedTextView"
+        android:layout_alignRight="@+id/networkDetailsTextView"
+        android:minHeight="35dp"
+        android:minWidth="70dp"
+        android:textOff="Slow"
+        android:textOn="Slow" />
+
+    <ToggleButton
+        android:id="@+id/averageToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/slowToggleButton"
+        android:layout_alignBottom="@+id/slowToggleButton"
+        android:layout_toRightOf="@+id/slowToggleButton"
+        android:minHeight="35dp"
+        android:minWidth="70dp"
+        android:textOff="Average"
+        android:textOn="Average" />
+
+    <ToggleButton
+        android:id="@+id/fastToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/averageToggleButton"
+        android:layout_alignBottom="@+id/averageToggleButton"
+        android:layout_toRightOf="@+id/averageToggleButton"
+        android:minHeight="35dp"
+        android:minWidth="70dp"
+        android:textOff="Fast"
+        android:textOn="Fast" />
+
+    <TextView
+        android:id="@+id/addressTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ratedSpeedTextView"
+        android:layout_below="@+id/placeTV"
+        android:layout_marginTop="24dp"
+        android:text="Address" />
+
+    <EditText
+        android:id="@+id/floorEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/BuildingLevelTextView"
+        android:layout_alignLeft="@+id/addressEditText"
+        android:layout_alignRight="@+id/addressEditText"
+        android:ems="9"
+        android:inputType="text|none" />
+
+    <TextView
+        android:id="@+id/RoomTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/BuildingLevelTextView"
+        android:layout_below="@+id/BuildingLevelTextView"
+        android:layout_marginTop="22dp"
+        android:text="Room" />
+
+    <EditText
+        android:id="@+id/roomEditText"
+		android:inputType="text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/RoomTextView"
+        android:layout_alignLeft="@+id/floorEditText"
+        android:layout_alignRight="@+id/floorEditText"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/IntroTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:text="You are reviewing for the network: "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/BuildingLevelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/addressTextView"
+        android:layout_below="@+id/addressTextView"
+        android:layout_marginTop="22dp"
+        android:text="Floor" />
+
+    <TextView
+        android:id="@+id/currentNetworkTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/IntroTextView"
+        android:layout_marginTop="7dp"
+        android:gravity="center"
+        android:text="Network"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/login_button_background" />
+
+    <EditText
+        android:id="@+id/placeEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/addressTextView"
+        android:layout_alignLeft="@+id/slowToggleButton"
+        android:ems="12"
+        android:hint="e.g. Starbucks"
+        android:inputType="text" >
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/addressEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/addressTextView"
+        android:layout_alignLeft="@+id/placeEditText"
+        android:layout_alignRight="@+id/placeEditText"
+        android:ems="10"
+        android:hint="1 North Road,  Hollywood"
+        android:inputType="textPostalAddress" />
+
+    <TextView
+        android:id="@+id/LocationDetailTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/slowToggleButton"
+        android:layout_below="@+id/slowToggleButton"
+        android:layout_marginTop="45dp"
+        android:text="Location Details"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/suggestionButton"
+        android:layout_marginBottom="16dp"
+        android:layout_toRightOf="@+id/ratedSpeedTextView"
+        android:background="@color/login_button_background"
+        android:minHeight="40dp"
+        android:text="Submit"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/networkDetailsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/currentNetworkTextView"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="25dp"
+        android:text="Network Details"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/placeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/BuildingLevelTextView"
+        android:layout_below="@+id/LocationDetailTextView"
+        android:layout_marginTop="33dp"
+        android:text="Place" />
+
+    <Button
+        android:id="@+id/suggestionButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/LocationDetailTextView"
+        android:layout_alignBottom="@+id/LocationDetailTextView"
+        android:layout_alignRight="@+id/fastToggleButton"
+        android:layout_marginRight="14dp"
+        android:minHeight="25dp"
+        android:text="Find Location" />
+
+</RelativeLayout>
