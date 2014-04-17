@@ -5,6 +5,7 @@ import sg.edu.astar.i2r.sns.psense.R;
 import sg.edu.astar.i2r.sns.service.DataCollectionService;
 import sg.edu.astar.i2r.sns.utility.Constant;
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -15,14 +16,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	@SuppressWarnings("unused")
 	private static final String TAG = MainActivity.class.getSimpleName();
 	
-	private String[] tabs = {"Map", "List", "Review"};
+	private String[] tabs = {"Search", "Nearby Hotspots", "Review Hotspot"};
 	private TabsPagerAdapter tabsAdapter;
 	private ActionBar actionBar;
 	private ViewPager mPager;
@@ -33,7 +37,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.activity_main);
-    	    	
+    	 showOverLay();
     	getActionBar().setDisplayHomeAsUpEnabled(false);
 		
 		//Swipe View
@@ -93,15 +97,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		super.onPause();
 	}
 
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater menuInflater = getMenuInflater();
 	   
 		menuInflater.inflate(R.menu.main, menu);
 	    mOptionsMenu = menu;
+	    
+	    MenuItem searchItem = (MenuItem) mOptionsMenu.findItem(R.id.mainSearch);
+		 SearchView searchView = (SearchView) searchItem.getActionView(); 
+		 searchView.setQueryHint("Trip planning( )");
+		 searchView.setIconifiedByDefault(false);
+		 
 
 	    return true;
-	}
+	}*/
 
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
@@ -115,6 +125,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		MenuItem searchItem = (MenuItem) mOptionsMenu.findItem(R.id.mainSearch);
 		final SearchView searchView = (SearchView) searchItem.getActionView(); 
+	
 		InputMethodManager imm = (InputMethodManager) getSystemService(MainActivity.INPUT_METHOD_SERVICE);
 		
 		if (!searchView.getQuery().toString().isEmpty() && (position == Constant.LIST_TAB_POSITION || position == Constant.MAP_TAB_POSITION)) {
@@ -149,4 +160,34 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 		onPrepareOptionsMenu(mOptionsMenu);
 	}
+	
+	
+	@Override
+	public void onBackPressed{
+		super.onBackPressed();
+	}
+	
+	 private void showOverLay(){
+
+			final Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
+
+			dialog.setContentView(R.layout.overlay_view);
+
+			LinearLayout layout = (LinearLayout) dialog.findViewById(R.id.overlayLayout);
+
+			layout.setOnClickListener(new OnClickListener() {
+
+				@Override
+
+				public void onClick(View arg0) {
+
+					dialog.dismiss();
+
+				}
+
+			});
+
+			dialog.show();
+
+		}
 }

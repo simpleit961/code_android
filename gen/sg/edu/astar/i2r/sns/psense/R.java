@@ -975,12 +975,14 @@ containing a value of this type.
         public static final int abc_split_action_bar_is_narrow=0x7f070002;
     }
     public static final class color {
-        public static final int abc_search_url_text_holo=0x7f08001e;
+        public static final int abc_search_url_text_holo=0x7f08002c;
         public static final int abc_search_url_text_normal=0x7f080000;
         public static final int abc_search_url_text_pressed=0x7f080002;
         public static final int abc_search_url_text_selected=0x7f080001;
         public static final int action_bar_background=0x7f080014;
         public static final int battleship_grey=0x7f080011;
+        public static final int blue2=0x7f080022;
+        public static final int blue25=0x7f080023;
         public static final int common_action_bar_splitter=0x7f08000c;
         /**  Sign-in Button Colors 
          */
@@ -993,13 +995,16 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f080009;
         public static final int common_signin_btn_light_text_focused=0x7f08000a;
         public static final int common_signin_btn_light_text_pressed=0x7f080008;
-        public static final int common_signin_btn_text_dark=0x7f08001f;
-        public static final int common_signin_btn_text_light=0x7f080020;
+        public static final int common_signin_btn_text_dark=0x7f08002d;
+        public static final int common_signin_btn_text_light=0x7f08002e;
         public static final int filter_color_green=0x7f08001b;
         public static final int filter_color_grey=0x7f08001d;
         public static final int filter_color_orange=0x7f08001c;
         public static final int filter_color_red=0x7f08001a;
         public static final int filter_color_strong=0x7f080019;
+        public static final int gray=0x7f08002b;
+        public static final int green=0x7f080028;
+        public static final int grey05=0x7f080024;
         public static final int list_background=0x7f08000d;
         public static final int list_background_pressed=0x7f08000e;
         public static final int list_item_title=0x7f08000f;
@@ -1007,9 +1012,18 @@ containing a value of this type.
         public static final int login_button_text=0x7f080016;
         public static final int navigation_background=0x7f080012;
         public static final int navigation_text=0x7f080010;
+        public static final int orange4=0x7f080020;
+        public static final int orange5=0x7f080021;
         public static final int rank_number=0x7f080013;
+        public static final int red=0x7f080027;
         public static final int sign_up_button_background=0x7f080018;
         public static final int sign_up_button_text=0x7f080017;
+        public static final int white=0x7f08002a;
+        public static final int white1=0x7f080025;
+        public static final int white2=0x7f080026;
+        public static final int yellow=0x7f080029;
+        public static final int yellow1=0x7f08001e;
+        public static final int yellow2=0x7f08001f;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -1195,46 +1209,53 @@ containing a value of this type.
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
         public static final int above_shadow=0x7f020057;
-        public static final int common_signin_btn_icon_dark=0x7f020058;
-        public static final int common_signin_btn_icon_disabled_dark=0x7f020059;
-        public static final int common_signin_btn_icon_disabled_focus_dark=0x7f02005a;
-        public static final int common_signin_btn_icon_disabled_focus_light=0x7f02005b;
-        public static final int common_signin_btn_icon_disabled_light=0x7f02005c;
-        public static final int common_signin_btn_icon_focus_dark=0x7f02005d;
-        public static final int common_signin_btn_icon_focus_light=0x7f02005e;
-        public static final int common_signin_btn_icon_light=0x7f02005f;
-        public static final int common_signin_btn_icon_normal_dark=0x7f020060;
-        public static final int common_signin_btn_icon_normal_light=0x7f020061;
-        public static final int common_signin_btn_icon_pressed_dark=0x7f020062;
-        public static final int common_signin_btn_icon_pressed_light=0x7f020063;
-        public static final int common_signin_btn_text_dark=0x7f020064;
-        public static final int common_signin_btn_text_disabled_dark=0x7f020065;
-        public static final int common_signin_btn_text_disabled_focus_dark=0x7f020066;
-        public static final int common_signin_btn_text_disabled_focus_light=0x7f020067;
-        public static final int common_signin_btn_text_disabled_light=0x7f020068;
-        public static final int common_signin_btn_text_focus_dark=0x7f020069;
-        public static final int common_signin_btn_text_focus_light=0x7f02006a;
-        public static final int common_signin_btn_text_light=0x7f02006b;
-        public static final int common_signin_btn_text_normal_dark=0x7f02006c;
-        public static final int common_signin_btn_text_normal_light=0x7f02006d;
-        public static final int common_signin_btn_text_pressed_dark=0x7f02006e;
-        public static final int common_signin_btn_text_pressed_light=0x7f02006f;
-        public static final int custom_progress_bar=0x7f020070;
-        public static final int ic_lock=0x7f020071;
-        public static final int ic_marker=0x7f020072;
-        public static final int ic_plusone_medium_off_client=0x7f020073;
-        public static final int ic_plusone_small_off_client=0x7f020074;
-        public static final int ic_plusone_standard_off_client=0x7f020075;
-        public static final int ic_plusone_tall_off_client=0x7f020076;
-        public static final int ic_popular=0x7f020077;
-        public static final int ic_wifi=0x7f020078;
-        public static final int ic_wifi_1_bar=0x7f020079;
-        public static final int ic_wifi_2_bar=0x7f02007a;
-        public static final int ic_wifi_3_bar=0x7f02007b;
-        public static final int ic_wifi_full_bar=0x7f02007c;
-        public static final int list_item_bg_normal=0x7f02007d;
-        public static final int list_item_bg_pressed=0x7f02007e;
-        public static final int list_selector=0x7f02007f;
+        public static final int btn_fast=0x7f020058;
+        public static final int btn_low=0x7f020059;
+        public static final int btn_medium=0x7f02005a;
+        public static final int common_signin_btn_icon_dark=0x7f02005b;
+        public static final int common_signin_btn_icon_disabled_dark=0x7f02005c;
+        public static final int common_signin_btn_icon_disabled_focus_dark=0x7f02005d;
+        public static final int common_signin_btn_icon_disabled_focus_light=0x7f02005e;
+        public static final int common_signin_btn_icon_disabled_light=0x7f02005f;
+        public static final int common_signin_btn_icon_focus_dark=0x7f020060;
+        public static final int common_signin_btn_icon_focus_light=0x7f020061;
+        public static final int common_signin_btn_icon_light=0x7f020062;
+        public static final int common_signin_btn_icon_normal_dark=0x7f020063;
+        public static final int common_signin_btn_icon_normal_light=0x7f020064;
+        public static final int common_signin_btn_icon_pressed_dark=0x7f020065;
+        public static final int common_signin_btn_icon_pressed_light=0x7f020066;
+        public static final int common_signin_btn_text_dark=0x7f020067;
+        public static final int common_signin_btn_text_disabled_dark=0x7f020068;
+        public static final int common_signin_btn_text_disabled_focus_dark=0x7f020069;
+        public static final int common_signin_btn_text_disabled_focus_light=0x7f02006a;
+        public static final int common_signin_btn_text_disabled_light=0x7f02006b;
+        public static final int common_signin_btn_text_focus_dark=0x7f02006c;
+        public static final int common_signin_btn_text_focus_light=0x7f02006d;
+        public static final int common_signin_btn_text_light=0x7f02006e;
+        public static final int common_signin_btn_text_normal_dark=0x7f02006f;
+        public static final int common_signin_btn_text_normal_light=0x7f020070;
+        public static final int common_signin_btn_text_pressed_dark=0x7f020071;
+        public static final int common_signin_btn_text_pressed_light=0x7f020072;
+        public static final int custom_progress_bar=0x7f020073;
+        public static final int custum_button=0x7f020074;
+        public static final int ic_lock=0x7f020075;
+        public static final int ic_marker=0x7f020076;
+        public static final int ic_plusone_medium_off_client=0x7f020077;
+        public static final int ic_plusone_small_off_client=0x7f020078;
+        public static final int ic_plusone_standard_off_client=0x7f020079;
+        public static final int ic_plusone_tall_off_client=0x7f02007a;
+        public static final int ic_popular=0x7f02007b;
+        public static final int ic_wifi=0x7f02007c;
+        public static final int ic_wifi_1_bar=0x7f02007d;
+        public static final int ic_wifi_2_bar=0x7f02007e;
+        public static final int ic_wifi_3_bar=0x7f02007f;
+        public static final int ic_wifi_full_bar=0x7f020080;
+        public static final int list_item_bg_normal=0x7f020081;
+        public static final int list_item_bg_pressed=0x7f020082;
+        public static final int list_selector=0x7f020083;
+        public static final int overlay=0x7f020084;
+        public static final int overlay2=0x7f020085;
+        public static final int overlayy=0x7f020086;
     }
     public static final class id {
         public static final int BuildingLevelTextView=0x7f060058;
@@ -1265,7 +1286,7 @@ containing a value of this type.
         public static final int default_activity_button=0x7f06002b;
         public static final int dialog=0x7f06000e;
         public static final int disableHome=0x7f060008;
-        public static final int distanceImageView=0x7f060067;
+        public static final int distanceImageView=0x7f06006a;
         public static final int distanceTextView=0x7f06004c;
         public static final int dropdown=0x7f06000f;
         public static final int edit_query=0x7f060033;
@@ -1276,28 +1297,30 @@ containing a value of this type.
         public static final int floorEditText=0x7f060057;
         public static final int fragment_container=0x7f06004f;
         public static final int getDirectionButton=0x7f060042;
-        public static final int headerTextView=0x7f060065;
+        public static final int headerTextView=0x7f060066;
         public static final int home=0x7f060014;
         public static final int homeAsUp=0x7f060005;
         public static final int hybrid=0x7f06001c;
         public static final int icon=0x7f06002d;
         public static final int ifRoom=0x7f06000a;
         public static final int image=0x7f06002a;
+        public static final int imageView1=0x7f060068;
         public static final int linearLayout1=0x7f060044;
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f06002c;
-        public static final int locationTextView=0x7f060069;
+        public static final int locationTextView=0x7f06006c;
         public static final int loginImageView=0x7f060049;
         public static final int loginTextView=0x7f06004a;
-        public static final int mainSearch=0x7f06006b;
+        public static final int mainSearch=0x7f06006e;
         public static final int map=0x7f060050;
         public static final int middle=0x7f060012;
-        public static final int nameTextView=0x7f060068;
+        public static final int nameTextView=0x7f06006b;
         public static final int networkDetailsTextView=0x7f060052;
-        public static final int networkTextView=0x7f060064;
+        public static final int networkTextView=0x7f060065;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
+        public static final int overlayLayout=0x7f060067;
         public static final int pager=0x7f06004d;
         public static final int placeEditText=0x7f06005e;
         public static final int placeTV=0x7f060041;
@@ -1305,7 +1328,7 @@ containing a value of this type.
         public static final int popularityImageView=0x7f060047;
         public static final int popularityTextView=0x7f060048;
         public static final int progressBar=0x7f06004e;
-        public static final int progressBar2=0x7f060066;
+        public static final int progressBar2=0x7f060069;
         public static final int progress_circular=0x7f060018;
         public static final int progress_horizontal=0x7f060019;
         public static final int radio=0x7f060032;
@@ -1313,7 +1336,7 @@ containing a value of this type.
         public static final int ratedSpeedTextView=0x7f060046;
         public static final int roomEditText=0x7f06005b;
         public static final int satellite=0x7f06001a;
-        public static final int searchView=0x7f06006d;
+        public static final int searchView=0x7f060070;
         public static final int search_badge=0x7f060035;
         public static final int search_bar=0x7f060034;
         public static final int search_button=0x7f060036;
@@ -1323,8 +1346,9 @@ containing a value of this type.
         public static final int search_mag_icon=0x7f060038;
         public static final int search_plate=0x7f060039;
         public static final int search_src_text=0x7f06003a;
+        public static final int search_view=0x7f060064;
         public static final int search_voice_btn=0x7f06003e;
-        public static final int settings=0x7f06006c;
+        public static final int settings=0x7f06006f;
         public static final int shortcut=0x7f060031;
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
@@ -1345,7 +1369,7 @@ containing a value of this type.
         public static final int top_action_bar=0x7f060023;
         public static final int up=0x7f060024;
         public static final int useLogo=0x7f060003;
-        public static final int wifiBackImageView=0x7f06006a;
+        public static final int wifiBackImageView=0x7f06006d;
         public static final int withText=0x7f06000c;
     }
     public static final class integer {
@@ -1405,18 +1429,21 @@ containing a value of this type.
         public static final int fragment_place=0x7f03001b;
         public static final int fragment_review=0x7f03001c;
         public static final int fragment_review_inactive=0x7f03001d;
-        public static final int fragment_wifi=0x7f03001e;
-        public static final int list_header=0x7f03001f;
-        public static final int progress_bar=0x7f030020;
-        public static final int row_nearby=0x7f030021;
-        public static final int row_nearby_extra=0x7f030022;
-        public static final int row_place=0x7f030023;
-        public static final int row_visible=0x7f030024;
-        public static final int support_simple_spinner_dropdown_item=0x7f030025;
+        public static final int fragment_search=0x7f03001e;
+        public static final int fragment_wifi=0x7f03001f;
+        public static final int list_header=0x7f030020;
+        public static final int overlay_view=0x7f030021;
+        public static final int progress_bar=0x7f030022;
+        public static final int row_nearby=0x7f030023;
+        public static final int row_nearby_extra=0x7f030024;
+        public static final int row_place=0x7f030025;
+        public static final int row_visible=0x7f030026;
+        public static final int support_simple_spinner_dropdown_item=0x7f030027;
     }
     public static final class menu {
         public static final int main=0x7f0d0000;
         public static final int place=0x7f0d0001;
+        public static final int rating=0x7f0d0002;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1777,6 +1804,7 @@ containing a value of this type.
     }
     public static final class xml {
         public static final int preferences=0x7f050000;
+        public static final int style=0x7f050001;
     }
     public static final class styleable {
         /**  ============================================ 

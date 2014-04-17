@@ -24,7 +24,7 @@ public abstract class AccessPointContent implements Parcelable {
 		login = false;
 		ssid = null;
 		bssid = null;
-		address = "1 Fusionopolis Way, Singapore 123"; // For testing purpose. Change to null later.
+		address = "Current location"; // For testing purpose. Change to null later.
 		place = null;
 		floor = null;
 		room = null;
@@ -36,6 +36,10 @@ public abstract class AccessPointContent implements Parcelable {
 
 	public void setLogin(boolean login) {
 		this.login = login;
+	}
+	
+	public boolean getLogin() {
+		return login;
 	}
 
 	public String getSsid() {

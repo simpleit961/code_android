@@ -15,6 +15,8 @@
 	<permission
          android:name="sg.edu.astar.i2r.sns.psense.permission.MAPS_RECEIVE"
          android:protectionLevel="signature"/>
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
 	<uses-permission  android:name="sg.edu.astar.i2r.sns.psense.permission.MAPS_RECEIVE"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -71,6 +73,12 @@
            		android:value="sg.edu.astar.i2r.sns.activity.MainActivity" />
         </activity>
         
+         <receiver android:name="sg.edu.astar.i2r.sns.connectionserver.ReceiverInternetConnection" >
+            <intent-filter>
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 	    <provider
 	       android:name="sg.edu.astar.i2r.sns.contentprovider.CollectionContentProvider"
 	       android:authorities="sg.edu.astar.i2r.sns.contentprovider.collectionconentprovider"

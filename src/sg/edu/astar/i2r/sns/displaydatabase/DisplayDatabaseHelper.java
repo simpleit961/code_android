@@ -1,5 +1,7 @@
 package sg.edu.astar.i2r.sns.displaydatabase;
 
+import sg.edu.astar.i2r.sns.collectiondatabase.ReportTable;
+import sg.edu.astar.i2r.sns.contentprovider.CollectionContentProvider;
 import sg.edu.astar.i2r.sns.contentprovider.DisplayContentProvider;
 import sg.edu.astar.i2r.sns.utility.Util;
 import android.content.ContentValues;
@@ -150,6 +152,7 @@ public class DisplayDatabaseHelper extends SQLiteOpenHelper {
 		return cursor;
 	}
 
+	
 	/**
 	 * Get a list of nearby access points. </br>
 	 * Currently it gets all the access points within a box area, not a circle area. 
@@ -179,6 +182,14 @@ public class DisplayDatabaseHelper extends SQLiteOpenHelper {
 		double lon_min = currentLongitude - lonDistance;
 		double lon_max = currentLongitude + lonDistance;
 
+		/*Uri uri = CollectionContentProvider.CONTENT_URI_REPORT;
+		String[] projection = {ReportTable.COLUMN_SSID, ReportTable.COLUMN_BSSID, 
+				ReportTable.COLUMN_QUALITY, ReportTable.COLUMN_LOGIN,
+				ReportTable.COLUMN_NAME, ReportTable.COLUMN_ADDRESS, ReportTable.COLUMN_FLOOR, ReportTable.COLUMN_ROOM,
+				ReportTable.COLUMN_LATITUDE, ReportTable.COLUMN_LONGITUDE};
+		
+		String selection = ReportTable.COLUMN_LATITUDE + " >= ? AND " + ReportTable.COLUMN_LATITUDE + " <= ? AND " +
+				ReportTable.COLUMN_LONGITUDE + " >= ? AND " + ReportTable.COLUMN_LONGITUDE + " <= ?";*/
 		Uri uri = DisplayContentProvider.CONTENT_URI_JOIN_ALL;
 		String[] projection = {AccessPointTable.COLUMN_SSID, AccessPointTable.COLUMN_BSSID, 
 				AccessPointTable.COLUMN_POPULARITY, AccessPointTable.COLUMN_RATED_SPEED, AccessPointTable.COLUMN_LOGIN,
@@ -193,6 +204,9 @@ public class DisplayDatabaseHelper extends SQLiteOpenHelper {
 
 		return cursor;
 	}
+	
+
+	
 
 }
 

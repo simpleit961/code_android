@@ -1,28 +1,59 @@
 package sg.edu.astar.i2r.sns.fragment;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import sg.edu.astar.i2r.sns.activity.DetailActivity;
 import sg.edu.astar.i2r.sns.activity.MainActivity;
+import sg.edu.astar.i2r.sns.adaptor.NearbyListAdapter;
+import sg.edu.astar.i2r.sns.adaptor.VisibleListAdapter;
+import sg.edu.astar.i2r.sns.collectiondatabase.CollectionDatabaseHelper;
+import sg.edu.astar.i2r.sns.collectiondatabase.ReportTable;
+import sg.edu.astar.i2r.sns.contentprovider.CollectionContentProvider;
 import sg.edu.astar.i2r.sns.displaydatabase.AccessPointTable;
 import sg.edu.astar.i2r.sns.displaydatabase.DisplayDatabaseHelper;
 import sg.edu.astar.i2r.sns.displaydatabase.LocationTable;
 import sg.edu.astar.i2r.sns.displaydatabase.PlaceTable;
+import sg.edu.astar.i2r.sns.model.AccessPointContent;
 import sg.edu.astar.i2r.sns.model.NearbyContent;
+import sg.edu.astar.i2r.sns.model.RecordsContent;
+import sg.edu.astar.i2r.sns.model.VisibleContent;
 import sg.edu.astar.i2r.sns.psense.R;
 import sg.edu.astar.i2r.sns.sensor.LocationController;
 import sg.edu.astar.i2r.sns.utility.Constant;
+import sg.edu.astar.i2r.sns.utility.Logger;
 import sg.edu.astar.i2r.sns.utility.Util;
+import sg.edu.astar.i2r.sns.utility.WifiUtils;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.Location;
-import android.location.LocationListener;
+import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,324 +62,331 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.commonsware.cwac.merge.MergeAdapter;
 
 /**
- * This class represents the Map screen displayed to the user.
- * It's main purpose is to populate the map with access point markers.
+ * This is for the wifi list fragment.
+ * This class manages the visible open wifi networks as well as the nearby ones.
  */
-public class BasicMapFragment extends Fragment 
-						implements LocationListener, OnMarkerClickListener {
+public class BasicMapFragment extends ListFragment {
+	protected static final String TAG = "ListFragment";
 
-	private static final String TAG = "BasicMapFragment";
 	private DisplayDatabaseHelper databaseHelper;
+	private CollectionDatabaseHelper dataHelper;
 
-	private HashMap<Marker, NearbyContent> extraMarkerInfo;	// used to retrieve the access point content for a particular marker 
-	private List<NearbyContent> nearbyAccessPointList;	// The list of currently displayed access points
-	private GoogleMap map;
-	
-	private String keywordFilter;	// This stores what the user types in the search bar when they submit a search
-	private Location location;
-	
-	private boolean isNetworkEnabled = false;
-	private boolean isGPSEnabled = false;
+	private View view;
+	private TextView networkTextView;
+	private TextView infoTextView;
 
-	private static View view;
-	private Context context;
-	
+	private MergeAdapter mergeAdapter;				// Refer to https://github.com/commonsguy/cwac-merge for more information
+	private VisibleListAdapter visibleListAdapter;
+	private NearbyListAdapter nearbyListAdapter;
+
+
+	private WifiManager wifiManager;			
+	private List<VisibleContent> visibleAccessPointList;	// The visible wifi list being displayed on the screen
+	private List<NearbyContent> nearbyAccessPointList;		// The nearby wifi list being displayed on the screen
+
+	private String keywordFilter;	// Stores what the user types in the search box
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		context = getActivity();
+		databaseHelper = new DisplayDatabaseHelper(getActivity());
+		dataHelper = new CollectionDatabaseHelper(getActivity());
+		view = inflater.inflate(R.layout.fragment_search, container, false);
+		//networkTextView = (TextView) view.findViewById(R.id.networkTextView);
+		infoTextView = (TextView) view.findViewById(R.id.textView);
+	//	networkTextView.setText("APs From Server");
+		infoTextView.setText("HOTSPOTS FROM SERVER");
+		wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
 
-		extraMarkerInfo = new HashMap<Marker, NearbyContent>();
-		databaseHelper = new DisplayDatabaseHelper(context);
-
-		// If a map view already exists, remove it first
-		if (view != null) {
-			ViewGroup parent = (ViewGroup) view.getParent();
-			if (parent != null)
-				parent.removeView(view);
-		}
+		setupAdapters();
+		setHasOptionsMenu(true);
 		
-		view = inflater.inflate(R.layout.fragment_map, container, false);
+		SearchView searchItem = (SearchView)view.findViewById(R.id.search_view);
+		final SearchView searchView = searchItem;
+		searchView.setQueryHint("Trip planninp : search AP");
+		searchView.setIconifiedByDefault(false);
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-		setHasOptionsMenu(true);	// Set this to indicate this fragment has additional menu options implementation
-		initialiseMap();			// and hence onCreateOptionsMenu() gets called
-		
+			@Override
+			public boolean onQueryTextSubmit(String string) {
+				if (!string.isEmpty()) {
+					keywordFilter = string;
+					visibleAccessPointList.clear();
+					updateAccessPointLists();
+				}
+
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(MainActivity.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+
+				return true;
+			}
+
+			// This is called even for tab swipes. 
+			@Override
+			public boolean onQueryTextChange(String string) {
+				Log.d(TAG, "onQueryTextChange");
+				if (string.isEmpty()) {
+					keywordFilter = null;
+					// Setup a delay for page swipes TODO
+					
+				//	updateAccessPointLists();
+				}
+
+				return true;
+			}
+		});
+
+		keywordFilter = null;
+
 		return view;
 	}
 
 	/**
-	 * Attempt to load the map
+	 * Set up the visible list and nearby list adapters.
+	 * These two adapters are passed into the merged adapter which
+	 * combines the two list so that it becomes one scrollable list.
 	 */
-	public void initialiseMap() {
-        if (map == null)
-            map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
- 
-        if (map == null) {
-            Toast.makeText(getActivity(), "Sorry, unable to load map", Toast.LENGTH_SHORT).show();
-            return;
-        }
-    	
-        // TODO check if location services is on, if not then inform user and redirect to settings page
-        
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        map.setOnMarkerClickListener(this);
-        
-        // Once the user click on the info window, send the access point information
-        // to the detail activity and start it
-    	map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-        		Intent i = new Intent(getActivity(), DetailActivity.class);
-        		i.putExtra("content", extraMarkerInfo.get(marker));
-    			i.putExtra("type", Constant.NEARBY_TYPE);
-    			
-    			startActivity(i);
-            }
-        });
-    	
-    	initialiseMapSettings();
-    }
-	
-	private void initialiseMapSettings() {
-		map.setMyLocationEnabled(true); // Disable when location services not availabe & show dialog to settings
-	
-		// Try to move the camera to where the user's current location
-		location = LocationController.getLocation(getActivity());
-		if (location == null) 
-			return;
-		
-		LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-		map.moveCamera(cameraUpdate);
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		keywordFilter = null;
-		
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-	
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+	private void setupAdapters() {
+		View visibleHeaderView = getActivity().getLayoutInflater().inflate(R.layout.list_header, null, false);
+		View nearbyHeaderView = getActivity().getLayoutInflater().inflate(R.layout.list_header, null, false);
+		mergeAdapter = new MergeAdapter();
+
+		TextView headerName = (TextView) nearbyHeaderView.findViewById(R.id.headerTextView);
+		headerName.setText("Nearby");
+		headerName = (TextView) visibleHeaderView.findViewById(R.id.headerTextView);
+		if (keywordFilter == null)
+			headerName.setText("List access points ");
+		else
+			headerName.setText("Visible from "+keywordFilter);
+
+		visibleAccessPointList = new ArrayList<VisibleContent>();
+		nearbyAccessPointList = new ArrayList<NearbyContent>();
+		initialiseAdapters();
+
+		mergeAdapter.addView(visibleHeaderView);
+		mergeAdapter.addAdapter(visibleListAdapter);
+		mergeAdapter.addView(nearbyHeaderView);
+		mergeAdapter.addAdapter(nearbyListAdapter);
+
+		setListAdapter(mergeAdapter);
 	}
 
-	@Override
-	public void onLocationChanged(Location location) {}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-//		Toast.makeText(getActivity(), "Disabled new provider " + provider,
-//		        Toast.LENGTH_SHORT).show();
-	}
-	
-	@Override
-	public void onProviderEnabled(String provider) {
-//		 Toast.makeText(getActivity(), "Enabled new provider " + provider,
-//			        Toast.LENGTH_SHORT).show();	
-	}
-	
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-
+	private void initialiseAdapters() {
+		visibleListAdapter = new VisibleListAdapter(getActivity(), R.layout.row_visible, new ArrayList<VisibleContent>());
+		nearbyListAdapter = new NearbyListAdapter(getActivity(), R.layout.row_nearby, new ArrayList<NearbyContent>());
 	}
 
-	@Override
-	public boolean onMarkerClick(Marker marker) {
-		return false;
-	}
-	
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		// Setting up the search bar
-		MenuItem searchItem = (MenuItem) menu.findItem(R.id.mainSearch);
-	    final SearchView searchView = (SearchView) searchItem.getActionView(); 
-	    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-	    	@Override
-	    	public boolean onQueryTextSubmit(String string) {
-	    		if (!string.isEmpty()) {
-	    			keywordFilter = string;
-	    			updateNearbyAccessPointList();
-	    		}
-
-	    		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(MainActivity.INPUT_METHOD_SERVICE);
-	    		imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-
-	    		return true;
-	    	}
-
-	    	// This is called even for tab swipes. 
-	    	@Override
-	    	public boolean onQueryTextChange(String string) {
-	    		Log.d(TAG, "onQueryTextChange");
-	    		if (string.isEmpty()) {
-	    			keywordFilter = null;
-	    			// Setup a delay for page swipes TODO
-	    			updateNearbyAccessPointList();
-	    		}
-
-	    		return true;
-	    	}
-	    });
-	}
-	
 	/**
-	 * Gets all the access points within a certain range of the user,
-	 * and then updates the list of markers displayed on the map.
+	 * Worker thread to get data from server. </br>
 	 */
-	public void updateNearbyAccessPointList() {
-		location = LocationController.getLocation(getActivity());
-		
-		if (location == null)
-			return;
+	private class RequestToServer extends AsyncTask<String, Void, String> {
 
-		map.clear();
-		UpdateNearbyList update = new UpdateNearbyList();
-		update.execute();
-	}
-	
-	private class UpdateNearbyList extends AsyncTask<String, Void, String> {
+		String keyword="";
+
+		public RequestToServer(String searchWorld) {
+			this.keyword = searchWorld;
+		}	
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			Cursor cursor;
-			double radius = Constant.NEARBY_RADIUS;
-			double currentLatitude = location.getLatitude();
-			double currentLongitude = location.getLongitude();
-			
-			nearbyAccessPointList = new ArrayList<NearbyContent>();
-			extraMarkerInfo.clear();
+			Log.d("RequestToServer","Do in background");
 
-			cursor = databaseHelper.getNearbyAccessPoint(currentLatitude, currentLongitude, radius);
+			ConnectivityManager cm =  (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE) ;
+			if (cm == null)
+				return null;
+			if (cm.getActiveNetworkInfo()!=null && cm.getActiveNetworkInfo().isConnected() ) {
+				/// connected
+				// send Http request with keyword
+				// save in database
+				String url = "http://54.255.147.139/api/v1/reports";
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+				if (!keyword.equals("")) {
+					nameValuePairs.add(new BasicNameValuePair("name", keyword));
+					nameValuePairs.add(new BasicNameValuePair("address", keyword));
+				}
 
-			if (cursor == null)
-				return null;
-			
-			if (!cursor.moveToFirst()) {
-				cursor.close();
-				return null;
+				//	nameValuePairs.add(new BasicNameValuePair("address", keyword));
+				HttpClient httpClient = new DefaultHttpClient();
+				String paramsString = URLEncodedUtils.format(nameValuePairs, "UTF-8");
+				HttpGet httpGet = new HttpGet(url + "?" + paramsString);
+
+				try {
+					HttpResponse response = httpClient.execute(httpGet);
+					StatusLine statusLine = response.getStatusLine();
+					if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+						BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+						String json = reader.readLine();
+						// Instantiate a JSON object from the request response
+						try {
+							JSONObject jsonObject = new JSONObject(json);
+							JSONArray jsonArray;
+							VisibleContent vContent;
+							try {
+								jsonArray = jsonObject.getJSONArray("reports");
+								for (int i = 0; i < jsonArray.length(); i++) {
+									vContent = new VisibleContent();
+									String rating = jsonArray.getJSONObject(i).getString("rating");
+									String aaccessPoint = jsonArray.getJSONObject(i).getString("access_point");
+									JSONObject jsonAP = new JSONObject(aaccessPoint);
+									String ssid = jsonAP.getString("network_name");
+									String bssid =  jsonAP.getString("bssid");
+									boolean login_required = jsonAP.getBoolean("login_required");
+									
+									String place = jsonArray.getJSONObject(i).getString("place");
+									JSONObject jsonPlace = new JSONObject(place);
+								
+									String address = jsonPlace.getString("address");
+									
+									vContent.setFloor(address);
+									vContent.setRoom(address);
+									vContent.setAddress(address);
+									vContent.setRatedSpeed(Integer.parseInt(rating));
+									vContent.setBssid(bssid);
+									vContent.setSsid(ssid);
+									vContent.setLogin(login_required);
+									visibleAccessPointList.add(vContent);
+								}
+								
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							//  add jsonObject to visibleAccessPointList
+							// do the same for nearbyList : fulfill the list
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//
+			} else {
+				// request database
+				Cursor cursor = null ;
+				if (keyword == null)
+					keyword = "%";
+				cursor = dataHelper.getReports(keyword);
+				if (cursor == null)
+					return null;
+				List<VisibleContent> list = new ArrayList<VisibleContent>();
+				if (cursor.moveToFirst()) {
+					int nbRows = cursor.getCount();
+					for (int i=0; i< nbRows; i++) {
+						 VisibleContent vContent = new VisibleContent();
+						String id = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ID));
+						String v1ssid = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_SSID));
+						String v1bssid = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_BSSID));
+						String v1quality = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_QUALITY));
+						String v1place = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_NAME));
+						String v1address = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ADDRESS));
+						String v1floor = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_FLOOR));
+						String v1room = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ROOM));
+						String login = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_LOGIN));
+						
+						vContent.setAddress(v1address);v1quality="1";
+						vContent.setRatedSpeed(Integer.parseInt(v1quality)); 
+						vContent.setBssid(v1bssid);
+						vContent.setSsid(v1ssid);
+						//vContent.setLogin(login == "1" ? true : false);
+						vContent.setLogin(login == "1" ? true : false);
+						list.add(vContent);
+						cursor.moveToNext();
+					}
+					cursor.close();
+				}
+				visibleAccessPointList = list;
 			}
-			
-			// Store access point information retrieved from the database into nearbyContent
-			do {
-				int distance;
-				NearbyContent nearbyContent = new NearbyContent();
-				
-				String ssid = cursor.getString(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_SSID));
-				int popularity = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_POPULARITY));
-				int ratedSpeed = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_RATED_SPEED));
-				int login = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_LOGIN));
-
-				nearbyContent.setRatedSpeed(ratedSpeed);
-				
-				if (popularity == 1)
-					nearbyContent.setPopular(true);
-				
-				if (login == 1) 
-					nearbyContent.setLogin(true);
-				
-				String place = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_NAME));
-				String address = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_ADDRESS));
-				String floor = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_FLOOR));
-				String room = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_ROOM));
-
-				double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocationTable.COLUMN_LATITUDE));
-				double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocationTable.COLUMN_LONGITUDE));
-				
-				distance = LocationController.getDistance(latitude, longitude, getActivity());
-
-				nearbyContent.setDistance(distance);
-				nearbyContent.setLatitude(latitude);
-				nearbyContent.setLongitude(longitude);
-				nearbyContent.setSsid(ssid);
-				nearbyContent.setPlace(place);
-				nearbyContent.setAddress(address);
-				nearbyContent.setFloor(floor);
-				nearbyContent.setRoom(room);
-				
-				nearbyAccessPointList.add(nearbyContent);
-			} while (cursor.moveToNext());
-			
-			cursor.close();
-			
-			filterNearbyList();
-			
 			return null;
 		}
-
-		/**
-		 * Filter the markers based on the search term provided by the user
-		 */
-		private void filterNearbyList() {
-			List<NearbyContent> filteredList = new ArrayList<NearbyContent>();
-			
-			for (NearbyContent nearbyContent : nearbyAccessPointList) {
-				if (Util.keywordFilter(nearbyContent, keywordFilter))
-					continue;
-
-				filteredList.add(nearbyContent);
-			}
-			
-			nearbyAccessPointList = filteredList;
-		}
-
 		@Override
 		protected void onPostExecute(String result) {
-			if (map == null)
-				return;
-			
-			populateMap();
+			visibleListAdapter.clear();
+			visibleListAdapter.addAll(visibleAccessPointList);
+			nearbyListAdapter.clear();
+			nearbyListAdapter.addAll(nearbyAccessPointList);
 		}
+	}
 
-		public void populateMap() {
-			for (NearbyContent content: nearbyAccessPointList) {
-				double latitude, longitude;
-				String ssid;
-				
-				ssid = content.getSsid();
-				latitude = content.getLatitude();
-				longitude = content.getLongitude();
-				
-				Marker marker = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-						.title(ssid)
-                        .snippet(content.getPlace() + " - " + content.getAddress())
-						.icon(BitmapDescriptorFactory
-								.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-				
-				// Maps the access point contents with a marker
-				extraMarkerInfo.put(marker, content);
+
+
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+
+	}
+
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+		inflater.inflate(R.menu.main, menu);
+
+		MenuItem searchItem = (MenuItem) menu.findItem(R.id.mainSearch);
+		final SearchView searchView = (SearchView) searchItem.getActionView(); 
+		searchView.setQueryHint("Trip planninp : search AP");
+		searchView.setIconifiedByDefault(false);
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+			@Override
+			public boolean onQueryTextSubmit(String string) {
+				if (!string.isEmpty()) {
+					keywordFilter = string;
+					visibleAccessPointList.clear();
+					updateAccessPointLists();
+				}
+
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(MainActivity.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+
+				return true;
 			}
-		}
+
+			// This is called even for tab swipes. 
+			@Override
+			public boolean onQueryTextChange(String string) {
+				Log.d(TAG, "onQueryTextChange");
+				if (string.isEmpty()) {
+					keywordFilter = null;
+					// Setup a delay for page swipes TODO
+					
+				//	updateAccessPointLists();
+				}
+
+				return true;
+			}
+		});
+	}
+
+	/**
+	 * Call this to update both visible and nearby list
+	 */
+	public void updateAccessPointLists() {
+		// updataDatabaseFromServer
+
+		RequestToServer request = new RequestToServer(keywordFilter);
+		request.execute();
 	}
 }

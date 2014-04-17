@@ -5,6 +5,7 @@ import java.util.List;
 import sg.edu.astar.i2r.sns.model.NearbyContent;
 import sg.edu.astar.i2r.sns.psense.R;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,17 +70,20 @@ public class NearbyListAdapter extends ArrayAdapter<NearbyContent> {
 		case 0:
 			holder.ratedSpeedTextView.setVisibility(View.VISIBLE);
 			holder.ratedSpeedImageView.setVisibility(View.VISIBLE);
-			holder.ratedSpeedTextView.setText("Fast");
+			holder.ratedSpeedImageView.setBackgroundColor(Color.GREEN);
+			holder.ratedSpeedTextView.setText("Fast ");
 			break;
 		case 1:
 			holder.ratedSpeedTextView.setVisibility(View.VISIBLE);
 			holder.ratedSpeedImageView.setVisibility(View.VISIBLE);
+			holder.ratedSpeedImageView.setBackgroundColor(Color.YELLOW);
 			holder.ratedSpeedTextView.setText("Medium");
 			break;
 		case 2:
 			holder.ratedSpeedTextView.setVisibility(View.VISIBLE);
 			holder.ratedSpeedImageView.setVisibility(View.VISIBLE);
-			holder.ratedSpeedTextView.setText("Slow");
+			holder.ratedSpeedImageView.setBackgroundColor(Color.GRAY);
+			holder.ratedSpeedTextView.setText("Slow ");
 			break;
 		default:
 			holder.ratedSpeedImageView.setVisibility(View.INVISIBLE);

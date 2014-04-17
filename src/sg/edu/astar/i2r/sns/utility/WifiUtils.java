@@ -1,5 +1,13 @@
 package sg.edu.astar.i2r.sns.utility;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +17,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 
 public class WifiUtils {
 
@@ -33,7 +42,7 @@ public class WifiUtils {
 	public static List<ScanResult> getValidList(List<ScanResult> wifiList) {
 		List<ScanResult> validList = new ArrayList<ScanResult>();
 	
-		for (ScanResult result: wifiList) {
+		for (ScanResult result: wifiList) { 
 			if (isRequired(result)) {
 				validList.add(result);
 			}
@@ -49,7 +58,7 @@ public class WifiUtils {
 	 */
 	public static boolean isRequired(ScanResult result) {
 		final String cap = result.capabilities;
-	    final String[] securityModes = {"WEP", "PSK", "EAP"};
+		 final String[] securityModes = {"WEP", "PSK", "EAP"};
 	
 	    if (result.SSID.isEmpty() || result.BSSID.isEmpty()
 	    	|| result.capabilities.contains("-EAP-")		// enterprise secured
@@ -61,10 +70,34 @@ public class WifiUtils {
 	    	if (cap.contains(securityModes[i])) 
 	    		return false;
 	    }
-	    
 	    return true;
 	}
+	
+	public static boolean login_web_required() {
+		 URL url =null;
+		 HttpURLConnection urlConnection = null;
+		  try {
+		   url = new URL("http://www.android.com/");
+		   urlConnection = (HttpURLConnection) url.openConnection();
+		   URL u = urlConnection.getURL();
+		   String s = u.getHost();
+		   String a =s;
+		     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+		     if (!url.getHost().equals(urlConnection.getURL().getHost())) {
+		       // we were redirected! Kick the user out to the browser to sign on?\
+		    	 s = u.getHost();
+		    	 return true;
+		    	 }
+		   } catch (IOException e) {
+			   
+		   } finally {
+		     urlConnection.disconnect();
+		   }
+		  
+		   return false;
+	}
 
+	
 	public static String removeQuotations(String ssid) {
 		return ssid.substring(1, ssid.length() - 1);
 	}

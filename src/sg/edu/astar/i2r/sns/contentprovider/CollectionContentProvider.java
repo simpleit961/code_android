@@ -6,7 +6,10 @@ import sg.edu.astar.i2r.sns.collectiondatabase.CollectionDatabaseHelper.Collecti
 import sg.edu.astar.i2r.sns.collectiondatabase.EncounterTable;
 import sg.edu.astar.i2r.sns.collectiondatabase.LocationTable;
 import sg.edu.astar.i2r.sns.collectiondatabase.PlaceTable;
+import sg.edu.astar.i2r.sns.collectiondatabase.ReportTable;
+import sg.edu.astar.i2r.sns.collectiondatabase.TempReportTable;
 import sg.edu.astar.i2r.sns.collectiondatabase.UserTable;
+import sg.edu.astar.i2r.sns.displaydatabase.DisplayDatabaseHelper.DisplayTables;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -38,6 +41,9 @@ public class CollectionContentProvider extends ContentProvider {
     // Define Table URIs
 	private static final String PATH_USER = CollectionTables.USER;
 	private static final String PATH_PLACE = CollectionTables.PLACE;
+	private static final String PATH_REPORT = CollectionTables.REPORT;
+	private static final String PATH_TEMPREPORT = CollectionTables.TEMPREPORT;
+
 	private static final String PATH_LOCATION = CollectionTables.LOCATION;
 	private static final String PATH_ENCOUNTER = CollectionTables.ENCOUNTER;
 	private static final String PATH_INTERACTION = CollectionTables.INTERACTION;
@@ -48,6 +54,9 @@ public class CollectionContentProvider extends ContentProvider {
 	
 	public static final Uri CONTENT_URI_USER = Uri.withAppendedPath(AUTHORITY_URI, PATH_USER);
 	public static final Uri CONTENT_URI_PLACE = Uri.withAppendedPath(AUTHORITY_URI, PATH_PLACE);
+	public static final Uri CONTENT_URI_REPORT = Uri.withAppendedPath(AUTHORITY_URI, PATH_REPORT);
+	public static final Uri CONTENT_URI_TEMPREPORT = Uri.withAppendedPath(AUTHORITY_URI, PATH_TEMPREPORT);
+
 	public static final Uri CONTENT_URI_LOCATION = Uri.withAppendedPath(AUTHORITY_URI, PATH_LOCATION);
 	public static final Uri CONTENT_URI_ENCOUNTER = Uri.withAppendedPath(AUTHORITY_URI, PATH_ENCOUNTER);
 	public static final Uri CONTENT_URI_INTERACTION = Uri.withAppendedPath(AUTHORITY_URI, PATH_INTERACTION);
@@ -56,6 +65,11 @@ public class CollectionContentProvider extends ContentProvider {
 	public static final Uri CONTENT_URI_ACCESS_POINT_TAGGED_PLACE = Uri.withAppendedPath(AUTHORITY_URI, PATH_ACCESS_POINT_TAGGED_PLACE);
 	public static final Uri CONTENT_URI_ENCOUNTER_WITH_ACCESS_POINT = Uri.withAppendedPath(AUTHORITY_URI, PATH_ENCOUNTER_WITH_ACCESS_POINT);
 
+	// Joined Table
+	private static final String PATH_ACCESS_POINT_JOIN_PLACE = CollectionTables.ACCESS_POINT_JOIN_PLACE;
+	public static final Uri CONTENT_URI_ACCESS_POINT_JOIN_PLACE = Uri.withAppendedPath(AUTHORITY_URI, PATH_ACCESS_POINT_JOIN_PLACE);
+	
+		
 	// Setup UriMatcher
 	private static final int USER = 10;
 	private static final int USER_ID = 20;
@@ -71,12 +85,19 @@ public class CollectionContentProvider extends ContentProvider {
 	private static final int USER_RATES_ACCESS_POINT = 120;
 	private static final int ACCESS_POINT_TAGGED_PLACE = 130;
 	private static final int ENCOUNTER_WITH_ACCESS_POINT = 140;
-
+	private static final int ACCESS_POINT_JOIN_PLACE = 150;
+	private static final int REPORT = 160;
+	private static final int REPORT_ID = 170;
+	private static final int TEMPREPORT = 180;
+	private static final int TEMPREPORT_ID = 190;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 	static {
 		sURIMatcher.addURI(AUTHORITY, PATH_USER, USER);
 		sURIMatcher.addURI(AUTHORITY, PATH_PLACE, PLACE);
+		sURIMatcher.addURI(AUTHORITY, PATH_REPORT, REPORT);
+		sURIMatcher.addURI(AUTHORITY, PATH_TEMPREPORT, TEMPREPORT);
+		
 		sURIMatcher.addURI(AUTHORITY, PATH_LOCATION, LOCATION);
 		sURIMatcher.addURI(AUTHORITY, PATH_ENCOUNTER, ENCOUNTER);
 		sURIMatcher.addURI(AUTHORITY, PATH_INTERACTION, INTERACTION);
@@ -84,6 +105,9 @@ public class CollectionContentProvider extends ContentProvider {
 
 		sURIMatcher.addURI(AUTHORITY, PATH_USER + "/#", USER_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_PLACE + "/#", PLACE_ID);
+		sURIMatcher.addURI(AUTHORITY, PATH_REPORT + "/#", REPORT_ID);
+		sURIMatcher.addURI(AUTHORITY, PATH_TEMPREPORT + "/#", TEMPREPORT_ID);
+
 		sURIMatcher.addURI(AUTHORITY, PATH_LOCATION + "/#", LOCATION_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_ACCESS_POINT + "/#", ACCESS_POINT_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_ENCOUNTER + "/#", ENCOUNTER_ID);
@@ -91,6 +115,8 @@ public class CollectionContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, PATH_USER_RATES_ACCESS_POINT, USER_RATES_ACCESS_POINT);
 		sURIMatcher.addURI(AUTHORITY, PATH_ENCOUNTER_WITH_ACCESS_POINT, ENCOUNTER_WITH_ACCESS_POINT);
 		sURIMatcher.addURI(AUTHORITY, PATH_ACCESS_POINT_TAGGED_PLACE, ACCESS_POINT_TAGGED_PLACE);
+		sURIMatcher.addURI(AUTHORITY, PATH_ACCESS_POINT_JOIN_PLACE, ACCESS_POINT_JOIN_PLACE);
+
 	}
 	
 	@Override
@@ -121,12 +147,21 @@ public class CollectionContentProvider extends ContentProvider {
 		case PLACE_ID:
 			queryBuilder.appendWhere(PlaceTable.COLUMN_ID + "=" + uri.getLastPathSegment());
 			break;
+		case REPORT_ID:
+			queryBuilder.appendWhere(ReportTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+			break;
+		case TEMPREPORT_ID:
+			queryBuilder.appendWhere(TempReportTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+			break;
 		case PLACE:
+		case REPORT:
+		case TEMPREPORT:
 		case LOCATION:
 		case ENCOUNTER:
 		case ACCESS_POINT:
 		case USER_RATES_ACCESS_POINT:
 		case ACCESS_POINT_TAGGED_PLACE:
+		case ACCESS_POINT_JOIN_PLACE:
 		case ENCOUNTER_WITH_ACCESS_POINT:
 			break;
 		default:
@@ -160,6 +195,14 @@ public class CollectionContentProvider extends ContentProvider {
 		case PLACE_ID:
 			table = CollectionTables.PLACE;
 			break; 
+		case REPORT:
+		case REPORT_ID:
+			table = CollectionTables.REPORT;
+			break; 
+		case TEMPREPORT:
+		case TEMPREPORT_ID:
+			table = CollectionTables.TEMPREPORT;
+			break; 
 		case ACCESS_POINT:
 		case ACCESS_POINT_ID:
 			table = CollectionTables.ACCESS_POINT;
@@ -168,6 +211,9 @@ public class CollectionContentProvider extends ContentProvider {
 		case LOCATION_ID:
 			table = CollectionTables.LOCATION;
 			break; 
+		case ACCESS_POINT_JOIN_PLACE:
+			table = CollectionTables.ACCESS_POINT_JOIN_PLACE;
+			break;
 		case INTERACTION:
 			table = CollectionTables.INTERACTION;
 			break; 
@@ -211,6 +257,14 @@ public class CollectionContentProvider extends ContentProvider {
 			path = PATH_PLACE;
 			id = db.insert(CollectionTables.PLACE, null, values);
 			break;
+		case REPORT:
+			path = PATH_REPORT;
+			id = db.insert(CollectionTables.REPORT, null, values);
+			break;
+		case TEMPREPORT:
+			path = PATH_TEMPREPORT;
+			id = db.insert(CollectionTables.TEMPREPORT, null, values);
+			break;
 		case LOCATION:
 			path = PATH_LOCATION;
 			id = db.insert(CollectionTables.LOCATION, null, values);
@@ -246,7 +300,12 @@ public class CollectionContentProvider extends ContentProvider {
 		case USER:
 			rowsDeleted = db.delete(UserTable.TABLE_NAME, selection, selectionArgs);
 			break;
-			
+		case REPORT:
+			rowsDeleted = db.delete(ReportTable.TABLE_NAME, selection, selectionArgs);
+			break;	
+		case TEMPREPORT:
+			rowsDeleted = db.delete(TempReportTable.TABLE_NAME, selection, selectionArgs);
+			break;	
 		case USER_ID:
 			id = uri.getLastPathSegment();
 			if (TextUtils.isEmpty(selection)) {
@@ -302,7 +361,12 @@ public class CollectionContentProvider extends ContentProvider {
 		case USER:
 			rowsUpdated = db.update(UserTable.TABLE_NAME, values, selection, selectionArgs);
 			break;
-			
+		case REPORT:
+			rowsUpdated = db.update(ReportTable.TABLE_NAME, values, selection, selectionArgs);
+			break;	
+		case TEMPREPORT:
+			rowsUpdated = db.update(TempReportTable.TABLE_NAME, values, selection, selectionArgs);
+			break;
 		case USER_ID:
 			id = uri.getLastPathSegment();
 			if (TextUtils.isEmpty(selection)) {

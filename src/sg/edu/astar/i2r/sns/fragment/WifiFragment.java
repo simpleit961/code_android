@@ -1,22 +1,44 @@
 package sg.edu.astar.i2r.sns.fragment;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import sg.edu.astar.i2r.sns.activity.DetailActivity;
 import sg.edu.astar.i2r.sns.activity.MainActivity;
 import sg.edu.astar.i2r.sns.adaptor.NearbyListAdapter;
 import sg.edu.astar.i2r.sns.adaptor.VisibleListAdapter;
+import sg.edu.astar.i2r.sns.collectiondatabase.CollectionDatabaseHelper;
+import sg.edu.astar.i2r.sns.collectiondatabase.ReportTable;
+import sg.edu.astar.i2r.sns.contentprovider.CollectionContentProvider;
 import sg.edu.astar.i2r.sns.displaydatabase.AccessPointTable;
 import sg.edu.astar.i2r.sns.displaydatabase.DisplayDatabaseHelper;
 import sg.edu.astar.i2r.sns.displaydatabase.LocationTable;
 import sg.edu.astar.i2r.sns.displaydatabase.PlaceTable;
 import sg.edu.astar.i2r.sns.model.AccessPointContent;
 import sg.edu.astar.i2r.sns.model.NearbyContent;
+import sg.edu.astar.i2r.sns.model.RecordsContent;
 import sg.edu.astar.i2r.sns.model.VisibleContent;
 import sg.edu.astar.i2r.sns.psense.R;
 import sg.edu.astar.i2r.sns.sensor.LocationController;
 import sg.edu.astar.i2r.sns.utility.Constant;
+import sg.edu.astar.i2r.sns.utility.Logger;
 import sg.edu.astar.i2r.sns.utility.Util;
 import sg.edu.astar.i2r.sns.utility.WifiUtils;
 import android.content.BroadcastReceiver;
@@ -25,11 +47,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +65,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.commonsware.cwac.merge.MergeAdapter;
 
@@ -51,6 +77,7 @@ public class WifiFragment extends ListFragment {
 	protected static final String TAG = "ListFragment";
 
 	private DisplayDatabaseHelper databaseHelper;
+	private CollectionDatabaseHelper dataHelper;
 	
 	private View view;
 	private TextView networkTextView;
@@ -64,6 +91,7 @@ public class WifiFragment extends ListFragment {
 	private WifiManager wifiManager;			
 	private List<VisibleContent> visibleAccessPointList;	// The visible wifi list being displayed on the screen
 	private List<NearbyContent> nearbyAccessPointList;		// The nearby wifi list being displayed on the screen
+	private List<String> listVisibleBSSID; 					// The list of visible access points
 	
 	private String keywordFilter;	// Stores what the user types in the search box
 	
@@ -80,13 +108,14 @@ public class WifiFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		databaseHelper = new DisplayDatabaseHelper(getActivity());
+		dataHelper = new CollectionDatabaseHelper(getActivity());
 		view = inflater.inflate(R.layout.fragment_wifi, container, false);
 		networkTextView = (TextView) view.findViewById(R.id.networkTextView);
 		
 		wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
 
 		setupAdapters();
-		setHasOptionsMenu(true);
+		//setHasOptionsMenu(true);
 		
 		keywordFilter = null;
 		wifiManager.startScan();	// Start a wifi scan straight to get the current surrounding networks
@@ -105,11 +134,11 @@ public class WifiFragment extends ListFragment {
 		mergeAdapter = new MergeAdapter();
 		
 		TextView headerName = (TextView) nearbyHeaderView.findViewById(R.id.headerTextView);
-		headerName.setText("Nearby");
+		headerName.setText("Neighborhood");
 		
 		visibleAccessPointList = new ArrayList<VisibleContent>();
 		nearbyAccessPointList = new ArrayList<NearbyContent>();
-		
+		listVisibleBSSID = new ArrayList<String>();
 		initialiseAdapters();
 		
 		mergeAdapter.addView(visibleHeaderView);
@@ -135,6 +164,7 @@ public class WifiFragment extends ListFragment {
 		if (scanResultList == null)
 			return;
 		
+		listVisibleBSSID = addListVisibleBSSID(scanResultList);
 		UpdateVisibleList update = new UpdateVisibleList(scanResultList);
 		update.execute();
 	}
@@ -168,6 +198,7 @@ public class WifiFragment extends ListFragment {
 		protected void onPostExecute(String result) {
 			visibleListAdapter.clear();
 			visibleListAdapter.addAll(visibleAccessPointList);
+			
 		}
 	}
 
@@ -188,11 +219,24 @@ public class WifiFragment extends ListFragment {
 			visibleContent.setSignalLevel(scanResult.level);
 			
 			visibleList.add(visibleContent);
+			//listVisibleBSSID.add(scanResult.BSSID);
 		}
 		
 		visibleList = extractDatabaseValues(visibleList);
 		
 		return visibleList;
+	}
+
+	public List<String> addListVisibleBSSID(List<ScanResult> visibleAccessPointList2) {
+		// TODO Auto-generated method stub
+		List<String> list = new ArrayList<String>();
+		for (ScanResult result : visibleAccessPointList2) {
+			 list.add(result.BSSID);
+				// TODO Auto-generated method stub
+				Logger log = new Logger();
+				log.addRecordToLog("bssid from scan="+result.BSSID);
+		}
+		return list;
 	}
 
 	/**
@@ -211,9 +255,12 @@ public class WifiFragment extends ListFragment {
 			String address = null;
 			String floor = null;
 			String room = null;
+			
+			
+			//cursor = databaseHelper.getAccessPointInformation(visibleContent.getSsid(), visibleContent.getBssid());
+			cursor = dataHelper.getAccessPointInformation(visibleContent.getSsid(), visibleContent.getBssid());
 
-			cursor = databaseHelper.getAccessPointInformation(visibleContent.getSsid(), visibleContent.getBssid());
-
+			
 			if (cursor == null)
 				continue;
 			
@@ -222,9 +269,9 @@ public class WifiFragment extends ListFragment {
 				continue;
 			}
 			
-			popularity = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_POPULARITY));
-			ratedSpeed = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_RATED_SPEED));
-			login = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_LOGIN));
+			popularity =1;// cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_POPULARITY));
+			ratedSpeed = cursor.getInt(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_QUALITY));
+			login = cursor.getInt(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_LOGIN));
 
 			visibleContent.setRatedSpeed(ratedSpeed);
 			
@@ -234,10 +281,10 @@ public class WifiFragment extends ListFragment {
 			if (login == 1) 
 				visibleContent.setLogin(true);
 			
-			place = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_NAME));
-			address = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_ADDRESS));
-			floor = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_FLOOR));
-			room = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_ROOM));
+			place = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_NAME));
+			address = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ADDRESS));
+			floor = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_FLOOR));
+			room = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ROOM));
 			
 			visibleContent.setPlace(place);
 			visibleContent.setAddress(address);
@@ -281,6 +328,7 @@ public class WifiFragment extends ListFragment {
 			
 			filteredContentList.add(list.get(index));
 			acceptedSsids.add(list.get(index).getSsid());
+			
 		}
 		
 		return filteredContentList;
@@ -339,7 +387,7 @@ public class WifiFragment extends ListFragment {
 			
 			nearbyAccessPointList = new ArrayList<NearbyContent>();
 			
-			cursor = databaseHelper.getNearbyAccessPoint(currentLatitude, currentLongitude, radius);
+			cursor = dataHelper.getNearbyAccessPoint(currentLatitude, currentLongitude, radius);
 
 			if (cursor == null)
 				return null;
@@ -350,13 +398,17 @@ public class WifiFragment extends ListFragment {
 			}
 			
 			do {
+				//** visibleAccessPointList
+				if (listVisibleBSSID.contains(cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_BSSID)))) 
+					continue;
+				// *** 
 				int distance;
 				NearbyContent nearbyContent = new NearbyContent();
-				
-				String ssid = cursor.getString(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_SSID));
-				int popularity = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_POPULARITY));
-				int ratedSpeed = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_RATED_SPEED));
-				int login = cursor.getInt(cursor.getColumnIndexOrThrow(AccessPointTable.COLUMN_LOGIN));
+				String bssid = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_BSSID));
+				String ssid = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_SSID));
+				int popularity = cursor.getInt(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ACCURACY));
+				int ratedSpeed = cursor.getInt(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_QUALITY));
+				int login = cursor.getInt(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_LOGIN));
 
 				nearbyContent.setRatedSpeed(ratedSpeed);
 				
@@ -366,13 +418,13 @@ public class WifiFragment extends ListFragment {
 				if (login == 1) 
 					nearbyContent.setLogin(true);
 				
-				String place = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_NAME));
-				String address = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_ADDRESS));
-				String floor = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_FLOOR));
-				String room = cursor.getString(cursor.getColumnIndexOrThrow(PlaceTable.COLUMN_ROOM));
+				String place = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_NAME));
+				String address = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ADDRESS));
+				String floor = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_FLOOR));
+				String room = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ROOM));
 
-				double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocationTable.COLUMN_LATITUDE));
-				double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocationTable.COLUMN_LONGITUDE));
+				double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_LATITUDE));
+				double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_LONGITUDE));
 				
 				distance = LocationController.getDistance(latitude, longitude, getActivity());
 				
@@ -396,6 +448,7 @@ public class WifiFragment extends ListFragment {
 		}
 
 		
+
 		/**
 		 * Filter the nearby list with the user's search term
 		 */
@@ -418,8 +471,175 @@ public class WifiFragment extends ListFragment {
 			nearbyListAdapter.addAll(nearbyAccessPointList);
 		}
 	}
-	
+	/**
+	 * Worker thread to get data from server. </br>
+	 */
+	private class RequestToServer extends AsyncTask<String, Void, String> {
 
+		String keyword="";
+		String latitude="";
+		String longitude="";
+		
+		public RequestToServer(String searchWorld) {
+			this.keyword = searchWorld;
+		}	
+		public RequestToServer(String latitude,String longitude) {
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}	
+		@Override
+		protected String doInBackground(String... arg0) {
+			Log.d("RequestToServer","Do in background");
+			
+			ConnectivityManager cm =  (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE) ;
+			if (cm == null)
+				return null;
+			if (cm.getActiveNetworkInfo()!=null && cm.getActiveNetworkInfo().isConnected()  && (keyword.equals(""))) {
+				/// connected
+				// send Http request with keyword
+				// save in database
+						String url = "http://54.255.147.139/api/v1/reports";
+						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+						/*if (!keyword.equals("")) {
+							nameValuePairs.add(new BasicNameValuePair("name", keyword));
+							nameValuePairs.add(new BasicNameValuePair("address", keyword));
+						}*/
+						/*if (!latitude.equals("")) {
+							nameValuePairs.add(new BasicNameValuePair("latitude", latitude));
+							nameValuePairs.add(new BasicNameValuePair("longitude", longitude));
+						}*/
+					//	nameValuePairs.add(new BasicNameValuePair("address", keyword));
+						HttpClient httpClient = new DefaultHttpClient();
+						String paramsString = URLEncodedUtils.format(nameValuePairs, "UTF-8");
+						HttpGet httpGet = new HttpGet(url + "?" + paramsString);
+						
+						 try {
+							HttpResponse response = httpClient.execute(httpGet);
+							StatusLine statusLine = response.getStatusLine();
+							 if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+								  BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+								    String json = reader.readLine();
+								    // Instantiate a JSON object from the request response
+								    try {
+										JSONObject jsonObject = new JSONObject(json);
+										List<RecordsContent> list =null ;
+										
+										// jsonObject.getJSONArray(access_points);
+										 list = fulfillList(list,jsonObject);
+										// visibleAccessPointList = list;
+										 saveData(list);
+										
+									} catch (JSONException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+							 }
+						} catch (ClientProtocolException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			  //
+			} /*  else {
+				// request database
+				Cursor cursor = null ;
+				if (!keyword.equals(""))
+					cursor = dataHelper.getReports(keyword);
+				if (cursor == null)
+					return null;
+				List<VisibleContent> list = new ArrayList<VisibleContent>();
+				if (cursor.moveToFirst()) {
+					int nbRows = cursor.getCount();
+					for (int i=0; i< nbRows; i++) {
+						 VisibleContent vContent = new VisibleContent();
+						String id = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ID));
+						String v1ssid = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_SSID));
+						String v1bssid = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_BSSID));
+						String v1quality = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_QUALITY));
+						String v1place = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_NAME));
+						String v1address = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ADDRESS));
+						String v1floor = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_FLOOR));
+						String v1room = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_ROOM));
+						String login = cursor.getString(cursor.getColumnIndexOrThrow(ReportTable.COLUMN_LOGIN));
+						
+						vContent.setAddress(v1address);v1quality="1";
+						vContent.setRatedSpeed(Integer.parseInt(v1quality)); 
+						vContent.setBssid(v1bssid);
+						vContent.setSsid(v1ssid);
+						//vContent.setLogin(login == "1" ? true : false);
+						vContent.setLogin(login == "1" ? true : false);
+						list.add(vContent);
+						cursor.moveToNext();
+					}
+					cursor.close();
+				}
+				visibleAccessPointList = list;
+			}*/
+			
+			
+			return null;
+		}
+		@Override
+		protected void onPostExecute(String result) {
+			visibleListAdapter.clear();
+			visibleListAdapter.addAll(visibleAccessPointList);
+		}
+	}
+	
+	public void saveData(List<RecordsContent> listContent) {
+		for (int i=0; i < listContent.size();i++) {
+			
+			dataHelper.saveData(listContent.get(i).getBssid(), listContent.get(i).getSsid(),
+					listContent.get(i).getRatedSpeed()+"",listContent.get(i).getLatitude(),listContent.get(i).getLongitude(),
+					listContent.get(i).getAccuracy(),  listContent.get(i).getSsid(),listContent.get(i).getAddress(), 
+					listContent.get(i).getFloor(), listContent.get(i).getRoom(),listContent.get(i).getLogin());
+		}
+		
+		
+	}
+	public List<RecordsContent> fulfillList( List<RecordsContent> list,JSONObject jsonObject) {
+		list = new ArrayList<RecordsContent>();
+		RecordsContent vContent;
+		 JSONArray jsonArray;
+		try {
+			jsonArray = jsonObject.getJSONArray("reports");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				vContent = new RecordsContent();
+				String rating = jsonArray.getJSONObject(i).getString("rating");
+				String aaccessPoint = jsonArray.getJSONObject(i).getString("access_point");
+				JSONObject jsonAP = new JSONObject(aaccessPoint);
+				String ssid = jsonAP.getString("network_name");
+				String bssid =  jsonAP.getString("bssid");
+				boolean login_required = jsonAP.getBoolean("login_required");
+				
+				String place = jsonArray.getJSONObject(i).getString("place");
+				JSONObject jsonPlace = new JSONObject(place);
+				String name = jsonPlace.getString("name");
+				vContent.setName(name);
+				String address = jsonPlace.getString("address");
+				String lat = jsonPlace.getString("latitude");
+				vContent.setLatitude(lat);
+				String longi = jsonPlace.getString("longitude");
+				vContent.setLongitude(longi);
+				
+				vContent.setFloor(address);
+				vContent.setRoom(address);
+				vContent.setAddress(address);
+				vContent.setRatedSpeed(Integer.parseInt(rating));
+				vContent.setBssid(bssid);
+				vContent.setSsid(ssid);
+				vContent.setLogin(login_required);
+				list.add(vContent);
+			}
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
 	/**
 	 * Check to see if the user is connected to this network
 	 * @param ssid the network name to compare agaisnt
@@ -520,7 +740,7 @@ public class WifiFragment extends ListFragment {
 		return array;
 	}
 
-	@Override
+	/*@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		MenuItem searchItem = (MenuItem) menu.findItem(R.id.mainSearch);
 	    final SearchView searchView = (SearchView) searchItem.getActionView(); 
@@ -530,7 +750,10 @@ public class WifiFragment extends ListFragment {
 	    	public boolean onQueryTextSubmit(String string) {
 	    		if (!string.isEmpty()) {
 	    			keywordFilter = string;
-	    			updateAccessPointLists();
+	    			RequestToServer request = new RequestToServer(keywordFilter);
+	    			request.execute();
+	    			// getInfoFromServer(keyword);
+	    			//updateAccessPointLists();
 	    		}
 
 	    		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(MainActivity.INPUT_METHOD_SERVICE);
@@ -554,12 +777,21 @@ public class WifiFragment extends ListFragment {
 	    		return true;
 	    	}
 	    });
-	}
+	}*/
 	
 	/**
 	 * Call this to update both visible and nearby list
 	 */
 	public void updateAccessPointLists() {
+		// updataDatabaseFromServer
+		
+		Logger log = new Logger();
+		location = LocationController.getLocation(getActivity());
+		if (location == null)
+			return;
+		RequestToServer request = new RequestToServer(location.getLatitude()+"",location.getLongitude()+"");
+		request.execute();
+		//****
 		updateVisibleAccessPointList();
 		updateNearbyAccessPointList();
 	}

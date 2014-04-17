@@ -2,6 +2,7 @@ package sg.edu.astar.i2r.sns.activity;
 
 import java.util.List;
 
+import sg.edu.astar.i2r.sns.connectionserver.ReceiverInternetConnection;
 import sg.edu.astar.i2r.sns.model.AccessPointContent;
 import sg.edu.astar.i2r.sns.model.NearbyContent;
 import sg.edu.astar.i2r.sns.psense.R;
@@ -215,3 +216,4 @@ public class DetailActivity extends FragmentActivity {
 		}
 	}
 }
+;

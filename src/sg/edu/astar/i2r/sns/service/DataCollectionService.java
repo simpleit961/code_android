@@ -79,7 +79,6 @@ public class DataCollectionService extends Service implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
 		context = getApplicationContext();
 		databaseHelper = new CollectionDatabaseHelper(getApplicationContext());
 		
@@ -315,10 +314,12 @@ public class DataCollectionService extends Service implements
 //			boolean allEncounteredBefore = true;
 			for (ScanResult result: wifiList) {
 				if (WifiUtils.isRequired(result)) {
+					Log.d("TEST 1 ","before is required check utils");
 					accessPointKey = databaseHelper.matchOrCreateAccessPointRecord(result);
 					databaseHelper.createEncounterWithAccessPointRecord(encounterKey, accessPointKey, result.level);
 //					if (haveNotEncountered(result)) allEncounteredBefore = false; 
 				}
+				Log.d("TEST 2 ","after is required check utils");
 			}
 			
 //			networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
