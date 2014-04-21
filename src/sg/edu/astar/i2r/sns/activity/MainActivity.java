@@ -5,22 +5,23 @@ import sg.edu.astar.i2r.sns.psense.R;
 import sg.edu.astar.i2r.sns.service.DataCollectionService;
 import sg.edu.astar.i2r.sns.utility.Constant;
 import android.app.ActionBar;
-import android.app.Dialog;
 import android.app.ActionBar.Tab;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	@SuppressWarnings("unused")
@@ -37,7 +38,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.activity_main);
-    	 showOverLay();
+    	showOverLay();
     	getActionBar().setDisplayHomeAsUpEnabled(false);
 		
 		//Swipe View
@@ -161,30 +162,41 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		onPrepareOptionsMenu(mOptionsMenu);
 	}
 	
-	
+	//start gagogg: Add this code to Press Back two time to exit.
+	boolean doubleBackToExitPressedOnce = false;
 	@Override
-	public void onBackPressed{
-		super.onBackPressed();
-	}
+	public void onBackPressed() {
+	    if (doubleBackToExitPressedOnce) {
+	        super.onBackPressed();
+	        return;
+	    }
+
+	    this.doubleBackToExitPressedOnce = true;
+	    Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+	    new Handler().postDelayed(new Runnable() {
+
+	        @Override
+	        public void run() {
+	            doubleBackToExitPressedOnce=false;                       
+	        }
+	    }, 2000);
+	} 
+	//end: gagogg
 	
 	 private void showOverLay(){
 
 			final Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
-
 			dialog.setContentView(R.layout.overlay_view);
-
 			LinearLayout layout = (LinearLayout) dialog.findViewById(R.id.overlayLayout);
 
 			layout.setOnClickListener(new OnClickListener() {
-
 				@Override
-
 				public void onClick(View arg0) {
 
 					dialog.dismiss();
 
 				}
-
 			});
 
 			dialog.show();
