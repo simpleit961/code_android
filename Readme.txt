@@ -37,3 +37,6 @@
 
 8. to enable home button in action bar 
 	actionBar.setHomeButtonEnabled(true);
+
+9. git checkout -- <file name> 
+	to discard change from working directory
