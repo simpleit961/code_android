@@ -40,3 +40,14 @@
 
 9. git checkout -- <file name> 
 	to discard change from working directory
+
+10. ncurse tool for git
+	tig
+
+11. Convert image ( another proccess possible)
+	conver image.jpeg new_image.png
+	!!!: install imagemagick 
+12. Good tutorial menu for android 
+	http://www.tutorialsbuzz.com/2013/06/android-option-menu-example.html
+13. Add new icon to android project 
+	 File → New → Other... → Android → Android Icon
