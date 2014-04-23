@@ -9,20 +9,44 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import android.os.Build;
 
 public class MainActivity extends Activity {
 
+	public static boolean isActionbarHiden = false;
+	public static ActionBar actionbar; 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		if (savedInstanceState == null) {
+		//get the action bar
+		actionbar = getActionBar(); 
+		
+		/*if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
+		}*/
+		
+	}
+	
+	public void onTextClick(View view) {
+		if(isActionbarHiden) {
+			actionbar.show();
+			isActionbarHiden = false;
+			Toast.makeText(this, "Hide Action Bar", Toast.LENGTH_SHORT)
+	          .show();
+		} else {
+			isActionbarHiden = true;
+			actionbar.hide();
+			Toast.makeText(this, "Show Action Bar", Toast.LENGTH_SHORT)
+	          .show();
 		}
 	}
+	
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -39,6 +63,8 @@ public class MainActivity extends Activity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			 Toast.makeText(this, "Refresh selected", Toast.LENGTH_SHORT)
+	          .show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -47,7 +73,7 @@ public class MainActivity extends Activity {
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
-	public static class PlaceholderFragment extends Fragment {
+	/*public static class PlaceholderFragment extends Fragment {
 
 		public PlaceholderFragment() {
 		}
@@ -59,6 +85,6 @@ public class MainActivity extends Activity {
 					false);
 			return rootView;
 		}
-	}
+	}*/
 
 }
