@@ -12,7 +12,28 @@
 
 5. git add --force [file name]
 	force add file in case we need to add some file in black list (.gitignore)
-	
+6. To make application full screen (put int MainActivity
+		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);	
 
 	
+7. Different between 
 
+        android:showAsAction="never"  --> not show in action
+        android:showAsAction="always" -->  show in action
+
+
+
+  <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/>
+    <item
+        android:id="@+id/menu_load"
+        android:icon="@drawable/ic_action_refresh"
+        android:orderInCategory="200"
+        android:showAsAction="always"
+        android:title="Load"/>
+
+8. to enable home button in action bar 
+	actionBar.setHomeButtonEnabled(true);
