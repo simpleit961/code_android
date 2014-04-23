@@ -37,10 +37,3 @@
 
 8. to enable home button in action bar 
 	actionBar.setHomeButtonEnabled(true);
-
-9. Find and print the line after match 
-	git log --> I want to get only comment. the second line after "Date" found
- 	git log | awk -v lines=2 '/Date/ {for(i=lines;i;--i)getline; print $0 }'
-
-
-
