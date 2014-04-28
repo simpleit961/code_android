@@ -51,3 +51,7 @@
 	http://www.tutorialsbuzz.com/2013/06/android-option-menu-example.html
 13. Add new icon to android project 
 	 File → New → Other... → Android → Android Icon
+
+14. Shot cut in eclipse
+	Ctrl + .  --> go to next error
+	Ctrl + ,  --> go to previous error
