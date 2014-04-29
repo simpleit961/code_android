@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-  <!--  <EditText
+ <!--  <EditText
         android:id="@+id/placesEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,7 +12,7 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="textNoSuggestions|none" />
--->
+ -->
 
     <ListView
         android:id="@+id/android:list"

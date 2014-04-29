@@ -1,10 +1,13 @@
 package sg.edu.astar.i2r.sns.sensor;
 
+import com.commonsware.cwac.sacklist.demo.BuildConfig;
+
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * The class for providing the location information
@@ -33,19 +36,39 @@ public class LocationController implements LocationListener {
 		isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		
 		if (isGPSEnabled) {
+			
+			if(BuildConfig.DEBUG){
+				Log.i("PSENSE::LocationControl", "GPSEnable = true");
+			}
+			
 			if (locationManager != null) {
+				
 //				locationManager.requestLocationUpdates(
 //						LocationManager.GPS_PROVIDER,
 //						0,
 //						0, this);
 				gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);	// Check if it's up to date
+				
 				if (gpsLocation != null) {
 					gpsAccuracy = gpsLocation.getAccuracy();
 				}
+			} else {
+				if(BuildConfig.DEBUG){
+					Log.i("PSENSE::LocationControl", "locationManager = null");
+				}
+			}
+		} else {
+			if(BuildConfig.DEBUG){
+				Log.i("PSENSE::LocationControl", "GPSEnable = false");
 			}
 		}
 		
 		if (isNetworkEnabled) {
+			
+			if(BuildConfig.DEBUG){
+				Log.i("PSENSE::LocationControl", "network enable  = true");
+			}
+			
 			if (locationManager != null) {
 //				locationManager.requestLocationUpdates(
 //                    LocationManager.NETWORK_PROVIDER,
@@ -54,13 +77,35 @@ public class LocationController implements LocationListener {
 				networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				if (networkLocation != null) {
 					networkAccuracy = networkLocation.getAccuracy();
+					if(BuildConfig.DEBUG){
+						Log.i("PSENSE::LocationControl", "network accuracy"+networkLocation.toString());
+					}
+				} else {
+					if(BuildConfig.DEBUG){
+						Log.i("PSENSE::LocationControl", "network NULLLLLLLLLLLLLLLLLLL");
+					}
 				}
+			}
+		} else {
+			if(BuildConfig.DEBUG){
+				Log.i("PSENSE::LocationControl", "network enable  = false");
 			}
 		}
 		
 		if ((networkAccuracy == 0 || gpsAccuracy < networkAccuracy) && gpsAccuracy > 0 && gpsLocation != null) {
+			if(BuildConfig.DEBUG){
+				Log.i("PSENSE::LocationControl", "return gps location");
+				Log.i("PSENSE::LocationControl", "Network location"+networkLocation.toString());
+				Log.i("PSENSE::LocationControl", "GPS location" + gpsLocation.toString());
+			}
 			return gpsLocation;
 		} else if ((gpsAccuracy == 0 || gpsAccuracy > networkAccuracy) && networkAccuracy > 0 && networkLocation != null) {
+			
+			if(BuildConfig.DEBUG){
+				Log.i("PSENSE::LocationControl", "return somethings not gpslocation");
+				Log.i("PSENSE::LocationControl", "Network location"+networkLocation.toString());
+				Log.i("PSENSE::LocationControl", "GPS location" + gpsLocation.toString());
+			}
 			return networkLocation;
 		}
 

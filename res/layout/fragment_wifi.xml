@@ -23,9 +23,7 @@
         android:textColor="@color/login_button_background"
         android:text="No Network Connected"
         android:textAppearance="?android:attr/textAppearanceMedium" />
- 
-
-     />
+     
    <!--   <Button
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

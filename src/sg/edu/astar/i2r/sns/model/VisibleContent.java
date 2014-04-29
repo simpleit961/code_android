@@ -1,5 +1,7 @@
 package sg.edu.astar.i2r.sns.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import sg.edu.astar.i2r.sns.utility.Constant;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,6 +12,16 @@ import android.os.Parcelable;
  */
 public class VisibleContent extends AccessPointContent {
 	private int signalLevel;
+	private LatLng latlng;
+	
+	
+	public LatLng getlatlng() {
+		return latlng;
+	}
+
+	public void setlatlng(LatLng mlatlng) {
+		this.latlng = mlatlng;
+	}
 
 	public VisibleContent() {
 		super();

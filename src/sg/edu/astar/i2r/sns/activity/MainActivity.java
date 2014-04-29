@@ -8,6 +8,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private ViewPager mPager;
 
 	private Menu mOptionsMenu;
+	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
