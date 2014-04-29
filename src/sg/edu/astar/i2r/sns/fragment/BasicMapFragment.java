@@ -112,7 +112,8 @@ public class BasicMapFragment extends ListFragment {
 	// gagogg:start
 	// add google map
 	private GoogleMap map;
-	static final LatLng HAMBURG = new LatLng(53.558, 9.927);
+	static final LatLng SINGAPORE = new LatLng(1.3, 103.8);
+	//1.3000° N, 103.8000° E
 
 	static final LatLng KIEL = new LatLng(53.551, 9.993);
 	private SupportMapFragment mMapFragment;
@@ -135,7 +136,7 @@ public class BasicMapFragment extends ListFragment {
 		map = ((MapFragment) getActivity().getFragmentManager()
 				.findFragmentById(R.id.map)).getMap();
 		
-		Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG)
+		/*Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG)
 				.title("Hamburg"));
 		Marker kiel = map
 				.addMarker(new MarkerOptions()
@@ -143,14 +144,14 @@ public class BasicMapFragment extends ListFragment {
 						.title("Kiel")
 						.snippet("Kiel is cool")
 						.icon(BitmapDescriptorFactory
-								.fromResource(R.drawable.ic_wifi)));
+								.fromResource(R.drawable.ic_wifi)));*/
 		
 
 		// Move the camera instantly to hamburg with a zoom of 15.
-		/*map.moveCamera(CameraUpdateFactory.newLatLngZoom(HAMBURG, 15));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(SINGAPORE, 15));
 
 		// Zoom in, animating the camera.
-		map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);*/
+		map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
 
 		setupAdapters();
 		setHasOptionsMenu(true);
@@ -440,7 +441,7 @@ public class BasicMapFragment extends ListFragment {
 				Marker kiel = map
 						.addMarker(new MarkerOptions()
 								.position(visibleContent.getlatlng())
-								.title(visibleContent.getBssid())
+								.title(visibleContent.getSsid())
 								//.snippet("Kiel is cool")
 								.icon(BitmapDescriptorFactory
 										.fromResource(R.drawable.ic_wifi)));
