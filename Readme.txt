@@ -55,3 +55,9 @@
 14. Shot cut in eclipse
 	Ctrl + .  --> go to next error
 	Ctrl + ,  --> go to previous error
+15. Add remote
+	git remote --> show remote
+	git add remote <remote_name> <link github.git>
+	git push <remote_name> <branch_name> 
+
+	
