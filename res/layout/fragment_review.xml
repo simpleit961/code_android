@@ -205,6 +205,6 @@
         android:layout_marginRight="14dp"
         android:minHeight="25dp"
         android:background="@drawable/custum_button"
-        android:text="Select from suggested locations" />
+        android:text="Suggested locations" />
 
 </RelativeLayout>

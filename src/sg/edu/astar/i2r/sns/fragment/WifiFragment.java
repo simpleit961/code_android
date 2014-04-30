@@ -156,19 +156,20 @@ public class WifiFragment extends ListFragment {
 				R.layout.list_header, null, false);
 		mergeAdapter = new MergeAdapter();
 
-		TextView headerName = (TextView) nearbyHeaderView
+		/*TextView headerName = (TextView) nearbyHeaderView
 				.findViewById(R.id.headerTextView);
-		headerName.setText("Neighborhood");
+		headerName.setText("Neighborhood");*/
+		
 
 		visibleAccessPointList = new ArrayList<VisibleContent>();
-		nearbyAccessPointList = new ArrayList<NearbyContent>();
+		/*nearbyAccessPointList = new ArrayList<NearbyContent>();*/
 		listVisibleBSSID = new ArrayList<String>();
 		initialiseAdapters();
 
 		mergeAdapter.addView(visibleHeaderView);
 		mergeAdapter.addAdapter(visibleListAdapter);
-		mergeAdapter.addView(nearbyHeaderView);
-		mergeAdapter.addAdapter(nearbyListAdapter);
+		/*mergeAdapter.addView(nearbyHeaderView);*/
+		/*mergeAdapter.addAdapter(nearbyListAdapter);*/
 
 		setListAdapter(mergeAdapter);
 	}
