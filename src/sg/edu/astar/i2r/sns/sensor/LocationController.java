@@ -93,19 +93,8 @@ public class LocationController implements LocationListener {
 		}
 		
 		if ((networkAccuracy == 0 || gpsAccuracy < networkAccuracy) && gpsAccuracy > 0 && gpsLocation != null) {
-			if(BuildConfig.DEBUG){
-				Log.i("PSENSE::LocationControl", "return gps location");
-				Log.i("PSENSE::LocationControl", "Network location"+networkLocation.toString());
-				Log.i("PSENSE::LocationControl", "GPS location" + gpsLocation.toString());
-			}
 			return gpsLocation;
 		} else if ((gpsAccuracy == 0 || gpsAccuracy > networkAccuracy) && networkAccuracy > 0 && networkLocation != null) {
-			
-			if(BuildConfig.DEBUG){
-				Log.i("PSENSE::LocationControl", "return somethings not gpslocation");
-				Log.i("PSENSE::LocationControl", "Network location"+networkLocation.toString());
-				Log.i("PSENSE::LocationControl", "GPS location" + gpsLocation.toString());
-			}
 			return networkLocation;
 		}
 

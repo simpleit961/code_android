@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -60,114 +63,135 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class ReviewFragment extends Fragment {
-    private static final int PICK_PLACE_REQUEST = 0;
+	private static final int PICK_PLACE_REQUEST = 0;
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "ReviewFragment";
 
-    private CollectionDatabaseHelper databaseHelper;
+	private CollectionDatabaseHelper databaseHelper;
 
-    private View view;
-    private Button submitButton;
+	private View view;
+	private Button submitButton;
 	private Button suggestionButton;
 	private EditText placeEditText;
 	private EditText addressEditText;
 	private EditText floorEditText;
 	private EditText roomEditText;
-	private int quality=1;
+	private int quality = 1;
 	private TextView currentNetworkTextView;
 	private Location location;
 	private TelephonyManager telephonyMgr;
-	private int nbRatings=0;
-	private String	login = "false";
-	
+	private int nbRatings = 0;
+	private String login = "false";
+
 	private WifiManager wifiManager;
 	private WifiInfo currentNetwork;
-	private ToggleButton  toggleButtonSlow,toggleButtonAverage,toggleButtonFast;
+	private ToggleButton toggleButtonSlow, toggleButtonAverage,
+			toggleButtonFast;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.fragment_review, container, false);
-//		Log.d(TAG, "onCreateView");
+		// Log.d(TAG, "onCreateView");
 
 		databaseHelper = new CollectionDatabaseHelper(getActivity());
-		wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-		
-		currentNetworkTextView = (TextView) view.findViewById(R.id.currentNetworkTextView);
+		wifiManager = (WifiManager) getActivity().getSystemService(
+				Context.WIFI_SERVICE);
+
+		currentNetworkTextView = (TextView) view
+				.findViewById(R.id.currentNetworkTextView);
 		placeEditText = (EditText) view.findViewById(R.id.placeEditText);
 		addressEditText = (EditText) view.findViewById(R.id.addressEditText);
 		floorEditText = (EditText) view.findViewById(R.id.floorEditText);
 		roomEditText = (EditText) view.findViewById(R.id.roomEditText);
-		
-		toggleButtonSlow = (ToggleButton) view.findViewById(R.id.slowToggleButton);
-		toggleButtonAverage = (ToggleButton) view.findViewById(R.id.averageToggleButton);
-		toggleButtonFast = (ToggleButton) view.findViewById(R.id.fastToggleButton);
+
+		toggleButtonSlow = (ToggleButton) view
+				.findViewById(R.id.slowToggleButton);
+		toggleButtonAverage = (ToggleButton) view
+				.findViewById(R.id.averageToggleButton);
+		toggleButtonFast = (ToggleButton) view
+				.findViewById(R.id.fastToggleButton);
 
 		toggleButtonSlow.setOnCheckedChangeListener(changeChecker);
 		toggleButtonAverage.setOnCheckedChangeListener(changeChecker);
 		toggleButtonFast.setOnCheckedChangeListener(changeChecker);
-		
+
 		location = LocationController.getLocation(getActivity());
-		telephonyMgr=(TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-		
+		telephonyMgr = (TelephonyManager) getActivity().getSystemService(
+				Context.TELEPHONY_SERVICE);
+
 		submitButton = (Button) view.findViewById(R.id.submitButton);
 		submitButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				String place, address="Fusionopolis", floor, room;
+				String place, address = "Fusionopolis", floor, room;
 				int speed = 0;
-				
+
 				floor = floorEditText.getText().toString();
 				address = addressEditText.getText().toString();
 				place = placeEditText.getText().toString();
 				room = roomEditText.getText().toString();
-				
-				
-				String ssid = WifiUtils.removeQuotations(currentNetwork.getSSID());
+
+				String ssid = WifiUtils.removeQuotations(currentNetwork
+						.getSSID());
 				String bssid = currentNetwork.getBSSID();
 				Long timestamp = System.currentTimeMillis();
-				
+
 				// Check if currently connected to a network
 				if (currentNetwork == null || bssid == null) {
-					Toast.makeText(getActivity(), "Not currently connected to a network", Toast.LENGTH_LONG).show();
+					Toast.makeText(getActivity(),
+							"Not currently connected to a network",
+							Toast.LENGTH_LONG).show();
 					return;
 				}
-				/*// save into database
-				String login = ReceiverInternetConnection.listBssid.get(currentNetwork.getBSSID());
-				if (login == null)*/
-			/*	String	login = "false";
-				if (WifiUtils.login_web_required())
-					login = "true";
-				else
-					login = "false";*/
-			//	boolean login_required = login.equals("false") ? false : true;
-				databaseHelper.saveReport((new Date().getTime()), quality+"", ""+Long.parseLong(telephonyMgr.getDeviceId()),
-						currentNetwork.getBSSID(), ssid, login, ssid, address,location.getLatitude()+"",
-						location.getLongitude()+"",location.getAccuracy()+"",ssid);
-				LoginWeb loginweb = new LoginWeb(ssid,address);
+				/*
+				 * // save into database String login =
+				 * ReceiverInternetConnection
+				 * .listBssid.get(currentNetwork.getBSSID()); if (login == null)
+				 */
+				/*
+				 * String login = "false"; if (WifiUtils.login_web_required())
+				 * login = "true"; else login = "false";
+				 */
+				// boolean login_required = login.equals("false") ? false :
+				// true;
+				databaseHelper.saveReport((new Date().getTime()), quality + "",
+						"" + Long.parseLong(telephonyMgr.getDeviceId()),
+						currentNetwork.getBSSID(), ssid, login, ssid, address,
+						location.getLatitude() + "", location.getLongitude()
+								+ "", location.getAccuracy() + "", ssid);
+				LoginWeb loginweb = new LoginWeb(ssid, address);
 				loginweb.execute();
-				/*databaseHelper.saveReport((new Date().getTime()), quality+"", ""+Long.parseLong(telephonyMgr.getDeviceId()),
-						currentNetwork.getBSSID(), ssid, login, ssid, address,location.getLatitude()+"",
-						location.getLongitude()+"",location.getAccuracy()+"",ssid);*/
-				/// check if the AP required a login 
-				//Toast.makeText(getActivity(), "Login required = "+ReceiverInternetConnection.listBssid.get(WifiUtils.getCurrentSsid(getActivity())), Toast.LENGTH_SHORT).show();
-				RequestToServer request = new RequestToServer(timestamp,ssid,address,place+" "+floor+" "+room);
-    			request.execute();
-				 
+				/*
+				 * databaseHelper.saveReport((new Date().getTime()), quality+"",
+				 * ""+Long.parseLong(telephonyMgr.getDeviceId()),
+				 * currentNetwork.getBSSID(), ssid, login, ssid,
+				 * address,location.getLatitude()+"",
+				 * location.getLongitude()+"",location.getAccuracy()+"",ssid);
+				 */
+				// / check if the AP required a login
+				// Toast.makeText(getActivity(),
+				// "Login required = "+ReceiverInternetConnection.listBssid.get(WifiUtils.getCurrentSsid(getActivity())),
+				// Toast.LENGTH_SHORT).show();
+				RequestToServer request = new RequestToServer(timestamp, ssid,
+						address, place + " " + floor + " " + room);
+				request.execute();
+
 			}
 		});
 
 		suggestionButton = (Button) view.findViewById(R.id.suggestionButton);
 		suggestionButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(getActivity(), PlaceActivity.class);
 				startActivityForResult(i, PICK_PLACE_REQUEST);
 			}
 		});
-		
+
 		setHasOptionsMenu(true);
 
 		return view;
@@ -176,68 +200,77 @@ public class ReviewFragment extends Fragment {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
-		if (data == null || requestCode != PICK_PLACE_REQUEST) return;
-		
+
+		if (data == null || requestCode != PICK_PLACE_REQUEST)
+			return;
+
 		String address = data.getStringExtra("address");
 		String place = data.getStringExtra("name");
-		
+
 		addressEditText.setText(address);
 		placeEditText.setText(place);
 	}
+
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		inflater.inflate(R.menu.rating, menu);
 	}
-	 public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		
-			switch(item.getItemId()){
-			
-			case R.id.settings:
-			 Toast.makeText(getActivity(), "Number of network reviewed = "+nbRatings, Toast.LENGTH_LONG).show();
-				break;
-			
-			}
-			
-			return true;
+
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+
+		switch (item.getItemId()) {
+
+		case R.id.settings:
+			Toast.makeText(getActivity(),
+					"Number of network reviewed = " + nbRatings,
+					Toast.LENGTH_LONG).show();
+			break;
+
 		}
+
+		return true;
+	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		// Updates the textview showing what network the user is connected to.
-		// Should actually update more frequently - listen for network state change and update
+		// Should actually update more frequently - listen for network state
+		// change and update
 		// for every new connection instead
 		currentNetwork = wifiManager.getConnectionInfo();
-		
+
 		if (!currentNetwork.getSSID().equals(""))
-			currentNetworkTextView.setText(WifiUtils.removeQuotations(currentNetwork.getSSID()));
+			currentNetworkTextView.setText(WifiUtils
+					.removeQuotations(currentNetwork.getSSID()));
 	}
+
 	OnCheckedChangeListener changeChecker = new OnCheckedChangeListener() {
 
-	    @Override
-	    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-	        if (isChecked){
-	            if (buttonView == toggleButtonSlow) {
-	                toggleButtonAverage.setChecked(false);
-	                toggleButtonFast.setChecked(false);
-	                quality=1;
-	            }
-	            if (buttonView == toggleButtonAverage) {
-	            	toggleButtonSlow.setChecked(false);
-	            	toggleButtonFast.setChecked(false);
-	            	quality=2;
-	            }
-	            if (buttonView == toggleButtonFast) {
-	            	toggleButtonSlow.setChecked(false);
-	                toggleButtonAverage.setChecked(false);
-	                quality=3;
-	            }
-	        }
-	    }
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (isChecked) {
+				if (buttonView == toggleButtonSlow) {
+					toggleButtonAverage.setChecked(false);
+					toggleButtonFast.setChecked(false);
+					quality = 1;
+				}
+				if (buttonView == toggleButtonAverage) {
+					toggleButtonSlow.setChecked(false);
+					toggleButtonFast.setChecked(false);
+					quality = 2;
+				}
+				if (buttonView == toggleButtonFast) {
+					toggleButtonSlow.setChecked(false);
+					toggleButtonAverage.setChecked(false);
+					quality = 3;
+				}
+			}
+		}
 	};
-	
+
 	/*
 	 * 
 	 * 
@@ -249,57 +282,69 @@ public class ReviewFragment extends Fragment {
 		String address;
 		String name;
 		HttpResponse response;
-		public RequestToServer(Long timestampp,String ssidd,String addresss,String namee) {
-			
-			this.ssid =ssidd;
+
+		public RequestToServer(Long timestampp, String ssidd, String addresss,
+				String namee) {
+
+			this.ssid = ssidd;
 			this.address = addresss;
 			this.name = namee;
-		}	
+		}
+
 		@Override
 		protected String doInBackground(String... arg0) {
-			Log.d("RequestToServer","Do in background");
+			Log.d("RequestToServer", "Do in background");
 			String url = "http://54.255.147.139/api/v1/reports";
-			JSONObject json=new JSONObject();
-			JSONObject jsonReport=new JSONObject();
-			
-			 try {
-			
-			json.put("reported_at", ""+(new Date().getTime()));
-			json.put("rating", quality);
-			json.put("deviceID", Long.parseLong(telephonyMgr.getDeviceId()));
-			
-			JSONObject ap= new JSONObject();
-			ap.put("bssid", currentNetwork.getBSSID());
-			ap.put("network_name", ssid);
-			
-			ap.put("login_required", login);
-			json.put("access_point", ap);
-			JSONObject placeJson = new JSONObject();
-			placeJson.put("name",name);
-			placeJson.put("address", address);
-			placeJson.put("latitude", location.getLatitude());
-			placeJson.put("longitude", location.getLongitude());
-			placeJson.put("location_granularity", location.getAccuracy());
-			json.put("place",placeJson);
-			jsonReport.put("report",json);
-			
-					
-			
-			HttpClient httpClient = new DefaultHttpClient();
-		    HttpPost httpost = new HttpPost(url);
-		  //sets a request header so the page receving the request
-		    //will know what to do with it
-		   httpost.setHeader("Accept", "application/json");
-		   httpost.setHeader("Content-type", "application/json");
-			 //passes the results to a string builder/entity
-		    StringEntity se = new StringEntity(jsonReport.toString(),"UTF-8");
-		   
-		    httpost.setEntity(se);  
-		  	  
-		    response = httpClient.execute(httpost);
-		    
-				 
-		
+			JSONObject json = new JSONObject();
+			JSONObject jsonReport = new JSONObject();
+
+			try {
+
+				//gagogg: old code
+				// json.put("reported_at", ""+(new Date().getTime()));
+				//gagogg: fix bug submit to server
+				//gagogg: because of time format > 10 numbers --> error on server size: respone 500
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH");
+//				String currentDateandTime = sdf.format(new Date());
+				String time = "" + new Date().getTime();
+				time = time.substring(0, 10);
+				json.put("reported_at", time);
+				//gagogg: end 
+				
+				json.put("rating", quality);
+				json.put("deviceID", Long.parseLong(telephonyMgr.getDeviceId()));
+
+				JSONObject ap = new JSONObject();
+				ap.put("bssid", currentNetwork.getBSSID());
+				ap.put("network_name", ssid);
+
+				ap.put("login_required", login);
+				json.put("access_point", ap);
+				JSONObject placeJson = new JSONObject();
+				placeJson.put("name", name);
+				placeJson.put("address", address);
+				placeJson.put("latitude", location.getLatitude());
+				placeJson.put("longitude", location.getLongitude());
+				placeJson.put("location_granularity", location.getAccuracy());
+				json.put("place", placeJson);
+				jsonReport.put("report", json);
+
+				HttpClient httpClient = new DefaultHttpClient();
+				HttpPost httpost = new HttpPost(url);
+				// sets a request header so the page receving the request
+				// will know what to do with it
+				httpost.setHeader("Accept", "application/json");
+				httpost.setHeader("Content-type", "application/json");
+				// passes the results to a string builder/entity
+				StringEntity se = new StringEntity(jsonReport.toString(),
+						"UTF-8");
+
+				Log.i(ReviewFragment.class.getName(), jsonReport.toString());
+
+				httpost.setEntity(se);
+
+				response = httpClient.execute(httpost);
+
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -312,61 +357,71 @@ public class ReviewFragment extends Fragment {
 			}
 			return null;
 		}
+
 		@Override
 		protected void onPostExecute(String result) {
-			 if  (response.getStatusLine().getStatusCode() == 200) {
-				 Toast.makeText(getActivity(), "Review submitted", Toast.LENGTH_LONG).show();
-				 nbRatings++;
-			 }
+			if (response.getStatusLine().getStatusCode() == 200) {
+				Toast.makeText(getActivity(), "Review submitted",
+						Toast.LENGTH_LONG).show();
+				nbRatings++;
+			} else {
+				Toast.makeText(getActivity(), "Review submitted FAILE",
+						Toast.LENGTH_LONG).show();
+			}
 		}
 	}
-	
+
 	private class LoginWeb extends AsyncTask<String, Void, String> {
 
 		String ssid;
 		String address;
-	public LoginWeb(String ssidd,String addresss) {
-			
+
+		public LoginWeb(String ssidd, String addresss) {
+
 			this.ssid = ssidd;
 			this.address = addresss;
-			
-		}	
+
+		}
+
 		@Override
 		protected String doInBackground(String... arg0) {
-			 URL url =null;
-			 HttpURLConnection urlConnection = null;
-			  try {
-			   url = new URL("http://www.android.com/");
-			   urlConnection = (HttpURLConnection) url.openConnection();
-			  /* URL u = urlConnection.getURL();
-			   String s = u.getHost();
-			   String a =s;*/
-			     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-			   Map<String,List<String>> map = urlConnection.getHeaderFields();
-			   if (map.toString().contains("HTTP Appgw")) {
-				   login="true";
-			   } else {
-				   login ="false";
-			   }
-			     if (!url.getHost().equals(urlConnection.getURL().getHost())) {
-			       // we were redirected! Kick the user out to the browser to sign on?\
-			    	 //s = u.getHost();
-			    //	 login="true";
-			    	 }
-			   } catch (IOException e) {
-				   
-			   } finally {
-			     urlConnection.disconnect();
-			   }
-			  
-			 // login="false";
+			URL url = null;
+			HttpURLConnection urlConnection = null;
+			try {
+				url = new URL("http://www.android.com/");
+				urlConnection = (HttpURLConnection) url.openConnection();
+				/*
+				 * URL u = urlConnection.getURL(); String s = u.getHost();
+				 * String a =s;
+				 */
+				InputStream in = new BufferedInputStream(
+						urlConnection.getInputStream());
+				Map<String, List<String>> map = urlConnection.getHeaderFields();
+				if (map.toString().contains("HTTP Appgw")) {
+					login = "true";
+				} else {
+					login = "false";
+				}
+				if (!url.getHost().equals(urlConnection.getURL().getHost())) {
+					// we were redirected! Kick the user out to the browser to
+					// sign on?\
+					// s = u.getHost();
+					// login="true";
+				}
+			} catch (IOException e) {
+
+			} finally {
+				urlConnection.disconnect();
+			}
+
+			// login="false";
 			return null;
 		}
+
 		@Override
 		protected void onPostExecute(String result) {
-			
+
 		}
 	}
-
 
 }
