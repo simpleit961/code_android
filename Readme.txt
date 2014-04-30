@@ -60,4 +60,5 @@
 	git add remote <remote_name> <link github.git>
 	git push <remote_name> <branch_name> 
 
-	
+16. Tab view android
+	http://www.androidhive.info/2013/10/android-tab-layout-with-swipeable-views-1/	
