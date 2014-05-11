@@ -8,13 +8,16 @@ import sg.edu.astar.i2r.sns.adapter.AvailableNetworkAdaptor;
 import sg.edu.astar.i2r.sns.model.AccessPoint;
 import sg.edu.astar.i2r.sns.utils.Loger;
 import sg.edu.astar.i2r.sns.utils.WifiScoutManager;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.webkit.WebView.FindListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 public class NetworkFragment extends Fragment {

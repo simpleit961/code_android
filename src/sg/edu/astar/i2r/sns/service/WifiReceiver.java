@@ -25,7 +25,7 @@ public class WifiReceiver extends BroadcastReceiver {
 		wifiList = WifiScoutManager.mWifiManager.getScanResults();
 		
 		Loger.debug("nuber--->>>>>>>." + number);
-		WifiScoutMainActivity.mtextView.setText("Wifi changed -->" + number);
+		//WifiScoutMainActivity.mtextView.setText("Wifi changed -->" + number);
 		number ++;
 		WifiScoutManager.updateListVisibleAccessPoint(wifiList);
 	}

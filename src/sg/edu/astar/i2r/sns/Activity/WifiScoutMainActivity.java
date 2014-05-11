@@ -44,7 +44,7 @@ public class WifiScoutMainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.main);
+		setContentView(R.layout.main);
 
 		//mtextView = (TextView) findViewById(R.id.maintextview);
 		mWifiScoutManager = new WifiScoutManager(this);
@@ -58,11 +58,11 @@ public class WifiScoutMainActivity extends Activity {
 			openBoxToDownloadDataBase();
 		}
 
-		if (WifiScoutManager.isConnectionActive())
+		/*if (WifiScoutManager.isConnectionActive())
 			mtextView.append("::" + "connection active");
 		else
 			mtextView.append("::" + "connection in active");
-
+*/
 		startService();
 		mWifiReceiver = new WifiReceiver();
 	}
