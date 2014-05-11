@@ -8,6 +8,7 @@ public class Places {
 	private String category = "";
 	private String description = "";
 	private String postal_code = "";
+	
 	public String getName() {
 		return name;
 	}
