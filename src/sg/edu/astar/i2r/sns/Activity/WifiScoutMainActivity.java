@@ -44,9 +44,9 @@ public class WifiScoutMainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		//setContentView(R.layout.main);
 
-		mtextView = (TextView) findViewById(R.id.maintextview);
+		//mtextView = (TextView) findViewById(R.id.maintextview);
 		mWifiScoutManager = new WifiScoutManager(this);
 
 		setupUIActionBar();

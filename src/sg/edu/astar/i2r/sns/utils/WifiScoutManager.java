@@ -3,6 +3,7 @@ package sg.edu.astar.i2r.sns.utils;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -22,9 +23,14 @@ public class WifiScoutManager {
 	
 	public WifiScoutManager(Context context) {
 		mContext = context;
+		listVisibleAccessPoint = new ArrayList<AccessPoint>();
 	}
 	
 	public static void updateListVisibleAccessPoint( List<ScanResult> listScanResult) {
+		if(listVisibleAccessPoint == null)
+			return;
+		
+		listVisibleAccessPoint.clear();
 		for(ScanResult scanResult: listScanResult) {
 			AccessPoint visibleAccessPoint= new AccessPoint();
 			visibleAccessPoint.setSsid(scanResult.SSID);
@@ -33,6 +39,8 @@ public class WifiScoutManager {
 			visibleAccessPoint.setLevel(scanResult.level);
 			visibleAccessPoint.setFrequency(scanResult.frequency);
 			visibleAccessPoint.setLogin_required(WifiUtils.isLoginRequired(scanResult));
+			
+			listVisibleAccessPoint.add(visibleAccessPoint);
 		}
 	}
 	
