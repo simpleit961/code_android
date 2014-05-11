@@ -21,20 +21,20 @@ public class MyTabsListener implements ActionBar.TabListener {
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		Toast.makeText(context, "Selected!", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "Selected!", Toast.LENGTH_SHORT).show();
 		ft.replace(R.id.fragment_container, fragment);
 	}
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		Toast.makeText(context, "Unselected!", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "Unselected!", Toast.LENGTH_SHORT).show();
 		ft.remove(fragment);
 	}
 
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		Toast.makeText(context, "Reselected!", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "Reselected!", Toast.LENGTH_SHORT).show();
 	}
 }

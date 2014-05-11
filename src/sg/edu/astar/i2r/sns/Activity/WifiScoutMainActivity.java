@@ -80,17 +80,14 @@ public class WifiScoutMainActivity extends Activity {
 			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 			// create new tab
 			ActionBar.Tab mMapTab = actionbar.newTab().setText("Map");
-			ActionBar.Tab mNetworkTab = actionbar.newTab().setText(
-					"WifiConnect");
+			ActionBar.Tab mNetworkTab = actionbar.newTab().setText("WifiConnect");
 			ActionBar.Tab mHistoryTab = actionbar.newTab().setText("History");
 
 			// bind the fragments to the tabs - set up tabListeners for each tab
-			mMapTab.setTabListener(new MyTabsListener(mMapFragment,
-					getApplicationContext()));
-			mNetworkTab.setTabListener(new MyTabsListener(mNetworkFragment,
-					getApplicationContext()));
-			mHistoryTab.setTabListener(new MyTabsListener(mHistoryFragment,
-					getApplicationContext()));
+			mMapTab.setTabListener(new MyTabsListener(mMapFragment,getApplicationContext()));
+			mNetworkTab.setTabListener(new MyTabsListener(mNetworkFragment,getApplicationContext()));
+			mHistoryTab.setTabListener(new MyTabsListener(mHistoryFragment,getApplicationContext()));
+			
 			// add tab
 			actionbar.addTab(mMapTab);
 			actionbar.addTab(mNetworkTab);
