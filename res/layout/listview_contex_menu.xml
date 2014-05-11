@@ -9,7 +9,7 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Do you want to download data base" />
+        android:text="Connect to this network?" />
 
     <Button
         android:id="@+id/button_ok"

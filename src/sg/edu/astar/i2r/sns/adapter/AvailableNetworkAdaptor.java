@@ -5,6 +5,7 @@ import java.util.List;
 import sg.edu.astar.i2r.sns.R;
 import sg.edu.astar.i2r.sns.model.AccessPoint;
 import sg.edu.astar.i2r.sns.utils.Loger;
+import sg.edu.astar.i2r.sns.utils.WifiUtils;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -93,7 +94,7 @@ public class AvailableNetworkAdaptor extends BaseAdapter implements OnClickListe
             
             //holder.mImageView.setImageResource(res.getIdentifier("com.androidexample.customlistview:drawable/"+tempValues.getImage(),null,null));
             holder.mTextView1.setText(mAccesspoint.getSsid());
-            holder.mTextView1.setText(mAccesspoint.getBssid());
+            holder.mTexview2.setText(mAccesspoint.getBssid());
               
              /******** Set Item Click Listner for LayoutInflater for each row *******/
 
@@ -114,18 +115,22 @@ public class AvailableNetworkAdaptor extends BaseAdapter implements OnClickListe
         public void onClick(View arg0) {
          /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
         	Loger.debug("Position click"+mPosition);
-        	openBoxToDownloadDataBase();
+        	openBoxToDownloadDataBase(mPosition);
         }              
     }   
     
-    public void openBoxToDownloadDataBase() {
+    public void openBoxToDownloadDataBase(final int Position) {
 		final Dialog dialog = new Dialog(mActivity);
 		dialog.setContentView(R.layout.listview_contex_menu);
+		
 		Button buttonOk = (Button) dialog.findViewById(R.id.button_ok);
 		buttonOk.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				Loger.debug(listVisibleAccessPoint.get(Position).getSsid());
+				AccessPoint accessPoint = listVisibleAccessPoint.get(Position);
+				WifiUtils.connectToSpecificNetwork(accessPoint);
 				dialog.dismiss();
 			}
 		});
