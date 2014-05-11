@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+import sg.edu.astar.i2r.sns.fragment.NetworkFragment;
 import sg.edu.astar.i2r.sns.model.AccessPoint;
 
 public class WifiScoutManager {
@@ -27,10 +28,17 @@ public class WifiScoutManager {
 	}
 	
 	public static void updateListVisibleAccessPoint( List<ScanResult> listScanResult) {
+		
 		if(listVisibleAccessPoint == null)
 			return;
 		
 		listVisibleAccessPoint.clear();
+		
+		if(listScanResult == null ) {
+			NetworkFragment.updateAdapter();
+			return;
+		}
+		
 		for(ScanResult scanResult: listScanResult) {
 			AccessPoint visibleAccessPoint= new AccessPoint();
 			visibleAccessPoint.setSsid(scanResult.SSID);
@@ -42,6 +50,8 @@ public class WifiScoutManager {
 			
 			listVisibleAccessPoint.add(visibleAccessPoint);
 		}
+		
+		NetworkFragment.updateAdapter();
 	}
 	
 	private static boolean isNetworkAvailable() {

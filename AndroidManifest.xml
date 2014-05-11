@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         
-         <service android:name="sg.edu.astar.i2r.sns.service.WifiConnectionService">
+         <service android:name="sg.edu.astar.i2r.sns.service.WifiConnectionScanService">
         </service>
     </application>
 

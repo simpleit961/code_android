@@ -12,7 +12,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.widget.Toast;
 
-public class WifiConnectionService extends Service {
+public class WifiConnectionScanService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent intent) {

@@ -53,4 +53,9 @@ public class NetworkFragment extends Fragment {
 		
 		mListViewAvailableContent.setAdapter(mAvailableNetworkAdaptor);
 	}
+	
+	public static void updateAdapter() {
+		if(mAvailableNetworkAdaptor!=null)
+			mAvailableNetworkAdaptor.notifyDataSetChanged();
+	}
 }

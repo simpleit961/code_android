@@ -33,7 +33,6 @@ public class WifiUtils {
 	 * @param accesspoint
 	 */
 	public static void connectToSpecificNetwork(AccessPoint accesspoint) {
-		
 		String networkSSID = accesspoint.getSsid();
 		String networkPass = "pass";
 

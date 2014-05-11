@@ -10,7 +10,8 @@ import sg.edu.astar.i2r.sns.global.Global;
 import sg.edu.astar.i2r.sns.utils.Loger;
 import sg.edu.astar.i2r.sns.utils.MyTabsListener;
 import sg.edu.astar.i2r.sns.utils.WifiScoutManager;
-import sg.edu.astar.i2r.sns.service.WifiConnectionService;
+import sg.edu.astar.i2r.sns.service.ConnectReceiver;
+import sg.edu.astar.i2r.sns.service.WifiConnectionScanService;
 import sg.edu.astar.i2r.sns.service.WifiReceiver;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -31,6 +32,8 @@ public class WifiScoutMainActivity extends Activity {
 	private SharedPreferences mPreferences;
 	private boolean mIsfirstLaunch;
 	private WifiReceiver mWifiReceiver;
+	private ConnectReceiver mConnectReceiver;
+	
 	private WifiScoutManager mWifiScoutManager;
 
 	// fragment
@@ -65,6 +68,7 @@ public class WifiScoutMainActivity extends Activity {
 */
 		startService();
 		mWifiReceiver = new WifiReceiver();
+		mConnectReceiver = new ConnectReceiver();
 	}
 
 	@SuppressLint("NewApi")
@@ -98,7 +102,7 @@ public class WifiScoutMainActivity extends Activity {
 	}
 
 	public void startService() {
-		startService(new Intent(this, WifiConnectionService.class));
+		startService(new Intent(this, WifiConnectionScanService.class));
 	}
 
 	public void openBoxToDownloadDataBase() {
@@ -126,10 +130,23 @@ public class WifiScoutMainActivity extends Activity {
 
 	@Override
 	public void onResume() {
+		
+		//http://silverballsoftware.com/android-monitor-wifi-state-with-broadcastreceiver
 		super.onResume();
 		Loger.debug("On Resume");
-		registerReceiver(mWifiReceiver, new IntentFilter(
-				WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+		intentFilter.addAction(WifiManager.EXTRA_SUPPLICANT_CONNECTED);
+		intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+		intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+		intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+		
+		registerReceiver(mWifiReceiver, intentFilter);
+		
+		//registerReceiver(mWifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+		//registerReceiver(mConnectReceiver, new IntentFilter(WifiManager.ACTION_PICK_WIFI_NETWORK));
+		//http://stackoverflow.com/questions/14814742/wifimanager-supplicant-connection-change-action-is-never-fired
+		/*WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION*/
 		/* | WifiManager.WIFI_STATE_CHANGED_ACTION */
 
 	}
