@@ -3,6 +3,7 @@ package sg.edu.astar.i2r.sns.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import sg.edu.astar.i2r.sns.fragment.NetworkFragment;
 import sg.edu.astar.i2r.sns.utils.Loger;
 import sg.edu.astar.i2r.sns.utils.WifiScoutManager;
 import android.content.BroadcastReceiver;
@@ -27,10 +28,9 @@ public class WifiReceiver extends BroadcastReceiver {
 
 		if (WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION.equals(action)) {
 			Loger.debug("1A:: SUPPLICANT_CONNECTION_CHANGE_ACTION");
-			/*SupplicantState supplicantState = (SupplicantState) intent
+			SupplicantState supplicantState = (SupplicantState) intent
 					.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
 			if (supplicantState == (SupplicantState.COMPLETED)) {
-				 if (I) Log.i(TAG, "SUPPLICANTSTATE ---> Connected"); 
 				Loger.debug("Supplicantstate --> connected");
 				// do something
 			}
@@ -40,7 +40,7 @@ public class WifiReceiver extends BroadcastReceiver {
 				// if (I) Log.i(TAG, "SUPPLICANTSTATE ---> Disconnected");
 				Loger.debug("Supplicantstate --> Disconected");
 				// do something
-			}*/
+			}
 		}
 		if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
 			Loger.debug("2:: NETWORK_STATE_CHANGED_ACTION");
@@ -49,20 +49,13 @@ public class WifiReceiver extends BroadcastReceiver {
 			Loger.debug("3:: WIFI_STATE_CHANGED_ACTION");
 		}
 
-		if (wifiList != null)
+		if (wifiList != null) 
 			wifiList.removeAll(wifiList);
 
 		wifiList = WifiScoutManager.mWifiManager.getScanResults();
-
-		if (wifiList != null) {
-			Loger.debug("nuber--->>>>>>>." + number + "::" + wifiList.size());
-		} else {
-			Loger.debug("nuber--->>>>>>>." + "no wifi detected");
-		}
-		// WifiScoutMainActivity.mtextView.setText("Wifi changed -->" +
-		// number);
 		number++;
 
 		WifiScoutManager.updateListVisibleAccessPoint(wifiList);
+		NetworkFragment.updateAdapter();
 	}
 }

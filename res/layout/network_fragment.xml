@@ -4,11 +4,22 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <CheckBox
+        android:id="@+id/checkbox_free_AP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Free Ap" />
+    <CheckBox
+        android:id="@+id/checkbox_encrypt_AP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Encrypt Ap" />
+    
+    <!-- <TextView
         android:id="@+id/maintextview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Network fragment" />
+        android:text="Network fragment" /> -->
 
     <ListView
         android:id="@+id/list_availabe_network"

@@ -33,6 +33,7 @@ public class WifiScoutManager {
 			return;
 		
 		listVisibleAccessPoint.clear();
+		listVisibleAccessPoint.removeAll(listVisibleAccessPoint);
 		
 		if(listScanResult == null ) {
 			NetworkFragment.updateAdapter();
@@ -46,12 +47,11 @@ public class WifiScoutManager {
 			visibleAccessPoint.setCapabilities(scanResult.capabilities);
 			visibleAccessPoint.setLevel(scanResult.level);
 			visibleAccessPoint.setFrequency(scanResult.frequency);
-			visibleAccessPoint.setLogin_required(WifiUtils.isLoginRequired(scanResult));
 			
+			visibleAccessPoint.setLogin_required(WifiUtils.isLoginRequired(scanResult));
 			listVisibleAccessPoint.add(visibleAccessPoint);
 		}
-		
-		NetworkFragment.updateAdapter();
+		/*NetworkFragment.updateAdapter();*/
 	}
 	
 	private static boolean isNetworkAvailable() {

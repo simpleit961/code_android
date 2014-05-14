@@ -16,7 +16,7 @@ public class WifiUtils {
 	public static boolean isLoginRequired(ScanResult scanResult) {
 		
 		String capabilities = scanResult.capabilities;
-		String[] encryptType = {"ESS", "WPA2", "EAP", "PSK", "CCMP", "WPA"};
+		String[] encryptType = {"WPA2", "EAP", "PSK", "CCMP", "WPA"};  //ESS
 
 		for(String i : encryptType) {
 			if(capabilities.contains(i)) {
